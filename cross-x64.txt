@@ -1,0 +1,22 @@
+[binaries]
+c = 'cl'
+cpp = 'cl'
+ar = 'lib'
+windres = 'rc'
+c_ld = 'link'
+cpp_ld = 'link'
+
+[properties]
+skip_sanity_check = true
+
+[host_machine]
+system = 'windows'
+cpu_family = 'x86_64'
+cpu = 'x86_64'
+endian = 'little'
+
+[build_machine]
+system = 'windows'
+cpu_family = 'x86_64'
+cpu = 'x86_64'
+endian = 'little'

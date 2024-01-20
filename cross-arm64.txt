@@ -1,0 +1,24 @@
+[binaries]
+c = 'cl'
+cpp = 'cl'
+ar = 'lib'
+windres = 'rc'
+c_ld = 'link'
+cpp_ld = 'link'
+
+[properties]
+needs_exe_wrapper = true
+skip_sanity_check = true
+
+[host_machine]
+system = 'windows'
+cpu_family = 'aarch64'
+cpu = 'armv8'
+endian = 'little'
+
+[build_machine]
+system = 'windows'
+cpu_family = 'x86_64'
+cpu = 'x86_64'
+endian = 'little'
+
