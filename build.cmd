@@ -18,6 +18,11 @@ where /q pip.exe || (
   exit /b 1
 )
 
+where /q cmake.exe || (
+  echo ERROR: "cmake.exe" not found
+  exit /b 1
+)
+
 where /q meson.exe || (
   pip install meson
   where /q meson.exe || (
@@ -74,22 +79,22 @@ if "!VS!" equ "" (
 	exit /b 1
 )  
 
-set VS160COMNTOOLS=!VS!\Common7\Tools\
+rem This is not set by vsdevcmd for whatever reason, which breaks our clean_env invocation, so set it now.
 set VS170COMNTOOLS=!VS!\Common7\Tools\
 
 rem *** download sources ***
 
 if not exist mesa.src (
-echo Downloading mesa
-curl -sfL https://archive.mesa3d.org/mesa-%MESA_VERSION%.tar.xz ^
-  | %SZIP% x -bb0 -txz -si -so ^
-  | %SZIP% x -bb0 -ttar -si -aoa 1>nul 2>nul
-move mesa-%MESA_VERSION% mesa.src
-git apply -p0 --directory=mesa.src mesa.patch || exit /b 1
+  echo Downloading mesa
+  curl -sfL https://archive.mesa3d.org/mesa-%MESA_VERSION%.tar.xz ^
+    | %SZIP% x -bb0 -txz -si -so ^
+    | %SZIP% x -bb0 -ttar -si -aoa 1>nul 2>nul
+  move mesa-%MESA_VERSION% mesa.src
+  git apply -p0 --directory=mesa.src mesa.patch || exit /b 1
 )
 
-echo Downloading win_flex_bison
 if not exist winflexbison (
+  echo Downloading win_flex_bison
   mkdir winflexbison
   pushd winflexbison
   curl -sfL -o win_flex_bison.zip https://github.com/lexxmark/winflexbison/releases/download/v2.5.25/win_flex_bison-2.5.25.zip || exit /b 1
@@ -98,9 +103,10 @@ if not exist winflexbison (
   popd
 )
 
-del "@PaxHeader" "HEAD" "pax_global_header" 1>nul 2>nul
-
-set LINK=version.lib
+if not exist vkloader.src (
+  echo Cloning Vulkan loader from git
+  git clone https://github.com/KhronosGroup/Vulkan-Loader vkloader.src
+)
 
 
 rem x86 build
@@ -114,7 +120,7 @@ meson setup ^
   mesa.build.x86 ^
   mesa.src ^
   --cross-file=cross-x86.txt ^
-  --prefix="%CD%\mesa-d3d12\x86" ^
+  --prefix="%CD%\mesa.prefix\x86" ^
   --default-library=static ^
   -Dmin-windows-version=10 ^
   -Dbuildtype=release ^
@@ -127,12 +133,21 @@ meson setup ^
   -Dspirv-to-dxil=false ^
   -Dshared-glapi=enabled ^
   -Dvulkan-drivers=microsoft-experimental ^
-  -Dvulkan-icd-dir="%CD%\mesa-d3d12\x86\bin" ^
+  -Dvulkan-icd-dir="%CD%\mesa.prefix\x86\bin" ^
   -Dopengl=false ^
   -Dgles1=disabled ^
   -Dgles2=disabled || exit /b 1
 ninja -C mesa.build.x86 install || exit /b 1
-copy "C:\Program Files (x86)\Windows Kits\10\bin\10.0.22621.0\x86\dxil.dll" "%CD%\mesa-d3d12\x86\bin\"
+copy "C:\Program Files (x86)\Windows Kits\10\bin\%WINSDK_VER%\x86\dxil.dll" "%CD%\mesa.prefix\x86\bin\"
+
+cmake -G Ninja ^
+  -S vkloader.src ^
+  -B vkloader.build.x86 ^
+  -DCMAKE_BUILD_TYPE=Release ^
+  -DCMAKE_INSTALL_PREFIX="%CD%\vkloader.prefix\x86" ^
+  -DUPDATE_DEPS=ON
+cmake --build vkloader.build.x86
+cmake --install vkloader.build.x86
 
 
 rem arm64 build
@@ -146,7 +161,7 @@ meson setup ^
   mesa.build.arm64 ^
   mesa.src ^
   --cross-file=cross-arm64.txt ^
-  --prefix="%CD%\mesa-d3d12\arm64" ^
+  --prefix="%CD%\mesa.prefix\arm64" ^
   --default-library=static ^
   -Dmin-windows-version=10 ^
   -Dbuildtype=release ^
@@ -159,12 +174,21 @@ meson setup ^
   -Dspirv-to-dxil=false ^
   -Dshared-glapi=enabled ^
   -Dvulkan-drivers=microsoft-experimental ^
-  -Dvulkan-icd-dir="%CD%\mesa-d3d12\arm64\bin" ^
+  -Dvulkan-icd-dir="%CD%\mesa.prefix\arm64\bin" ^
   -Dopengl=false ^
   -Dgles1=disabled ^
   -Dgles2=disabled || exit /b 1
 ninja -C mesa.build.arm64 install || exit /b 1
-copy "C:\Program Files (x86)\Windows Kits\10\bin\10.0.22621.0\arm64\dxil.dll" "%CD%\mesa-d3d12\arm64\bin\"
+copy "C:\Program Files (x86)\Windows Kits\10\bin\%WINSDK_VER%\arm64\dxil.dll" "%CD%\mesa.prefix\arm64\bin\"
+
+cmake -G Ninja ^
+  -S vkloader.src ^
+  -B vkloader.build.arm64 ^
+  -DCMAKE_BUILD_TYPE=Release ^
+  -DCMAKE_INSTALL_PREFIX="%CD%\vkloader.prefix\arm64" ^
+  -DUPDATE_DEPS=ON
+cmake --build vkloader.build.arm64
+cmake --install vkloader.build.arm64
 
 
 rem x64 build
@@ -178,7 +202,7 @@ meson setup ^
   mesa.build.x64 ^
   mesa.src ^
   --cross-file=cross-x64.txt ^
-  --prefix="%CD%\mesa-d3d12\x64" ^
+  --prefix="%CD%\mesa.prefix\x64" ^
   --default-library=static ^
   -Dmin-windows-version=10 ^
   -Dbuildtype=release ^
@@ -191,13 +215,26 @@ meson setup ^
   -Dspirv-to-dxil=false ^
   -Dshared-glapi=enabled ^
   -Dvulkan-drivers=microsoft-experimental ^
-  -Dvulkan-icd-dir="%CD%\mesa-d3d12\x64\bin" ^
+  -Dvulkan-icd-dir="%CD%\mesa.prefix\x64\bin" ^
   -Dopengl=false ^
   -Dgles1=disabled ^
   -Dgles2=disabled || exit /b 1
 ninja -C mesa.build.x64 install || exit /b 1
-copy "C:\Program Files (x86)\Windows Kits\10\bin\10.0.22621.0\x64\dxil.dll" "%CD%\mesa-d3d12\x64\bin\"
+copy "C:\Program Files (x86)\Windows Kits\10\bin\%WINSDK_VER%\x64\dxil.dll" "%CD%\mesa.prefix\x64\bin\"
 
-python patch-icds.py
-start /wait cmd /c "C:\Program Files (x86)\Inno Setup 6\Compil32.exe" /cc install-mesa-dozen-vk.iss
+cmake -G Ninja ^
+  -S vkloader.src ^
+  -B vkloader.build.x64 ^
+  -DCMAKE_BUILD_TYPE=Release ^
+  -DCMAKE_INSTALL_PREFIX="%CD%\vkloader.prefix\x64" ^
+  -DUPDATE_DEPS=ON
+cmake --build vkloader.build.x64
+cmake --install vkloader.build.x64
+
+
+rem build installer
+
+python patch-icds.py || exit /b 1
+"C:\Program Files (x86)\Windows Kits\10\bin\10.0.22621.0\x64\signtool.exe" sign /a /n "Uplink Laboratories" /fd SHA256 /td SHA256 /tr http://timestamp.digicert.com mesa.prefix\x86\bin\*.dll mesa.prefix\x86\bin\*.exe vkloader.prefix\x86\bin\*.dll mesa.prefix\x64\bin\*.dll mesa.prefix\x64\bin\*.exe vkloader.prefix\x64\bin\*.dll mesa.prefix\arm64\bin\*.dll mesa.prefix\arm64\bin\*.exe vkloader.prefix\arm64\bin\*.dll
+start /wait cmd /c "C:\Program Files (x86)\Inno Setup 6\Compil32.exe" /cc install-mesa-dozen-vk.iss || exit /b 1
 "C:\Program Files (x86)\Windows Kits\10\bin\10.0.22621.0\x64\signtool.exe" sign /a /n "Uplink Laboratories" /fd SHA256 /td SHA256 /tr http://timestamp.digicert.com Output\*exe

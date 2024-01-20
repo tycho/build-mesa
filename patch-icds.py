@@ -10,7 +10,7 @@ def patch_icd(path):
     json.dump(icd, open(path, 'wt'))
 	
 def main():
-	for root, dirs, files in os.walk("mesa-d3d12"):
+	for root, dirs, files in os.walk("mesa.prefix"):
 		for file in files:
 			if "dzn_icd" in file:
 				patch_icd(os.path.join(root, file))

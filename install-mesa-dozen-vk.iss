@@ -29,15 +29,83 @@ Compression=lzma2/max
 SolidCompression=yes
 WizardStyle=classic
 Uninstallable=yes
+ChangesEnvironment=yes
 
 [Languages]
 Name: "english"; MessagesFile: "compiler:Default.isl"
 
 [Files]
-Source: "mesa-d3d12\arm64\bin\*"; DestDir: "{app}\arm64\"; Flags: ignoreversion recursesubdirs createallsubdirs
-Source: "mesa-d3d12\x86\bin\*"; DestDir: "{app}\x86\"; Flags: ignoreversion recursesubdirs createallsubdirs
-Source: "mesa-d3d12\x64\bin\*"; DestDir: "{app}\x64\"; Flags: ignoreversion recursesubdirs createallsubdirs
+Source: "mesa.prefix\arm64\bin\*"; DestDir: "{app}\arm64\"; Flags: ignoreversion recursesubdirs createallsubdirs
+Source: "mesa.prefix\x86\bin\*"; DestDir: "{app}\x86\"; Flags: ignoreversion recursesubdirs createallsubdirs
+Source: "mesa.prefix\x64\bin\*"; DestDir: "{app}\x64\"; Flags: ignoreversion recursesubdirs createallsubdirs
+Source: "vkloader.prefix\arm64\bin\*"; DestDir: "{app}\loader\arm64\"; Flags: ignoreversion recursesubdirs createallsubdirs
+Source: "vkloader.prefix\x86\bin\*"; DestDir: "{app}\loader\x86\"; Flags: ignoreversion recursesubdirs createallsubdirs
+Source: "vkloader.prefix\x64\bin\*"; DestDir: "{app}\loader\x64\"; Flags: ignoreversion recursesubdirs createallsubdirs
 
+[Code]
+const EnvironmentKey = 'SYSTEM\CurrentControlSet\Control\Session Manager\Environment';
+
+procedure EnvAddPath(Path: string);
+var
+    Paths: string;
+begin
+    { Retrieve current path (use empty string if entry not exists) }
+    if not RegQueryStringValue(HKEY_LOCAL_MACHINE, EnvironmentKey, 'Path', Paths)
+    then Paths := '';
+
+    { Skip if string already found in path }
+    if Pos(';' + Uppercase(Path) + ';', ';' + Uppercase(Paths) + ';') > 0 then exit;
+
+    { App string to the end of the path variable }
+    Paths := Paths + ';'+ Path +';'
+
+    { Overwrite (or create if missing) path environment variable }
+    if RegWriteStringValue(HKEY_LOCAL_MACHINE, EnvironmentKey, 'Path', Paths)
+    then Log(Format('The [%s] added to PATH: [%s]', [Path, Paths]))
+    else Log(Format('Error while adding the [%s] to PATH: [%s]', [Path, Paths]));
+end;
+
+procedure EnvRemovePath(Path: string);
+var
+    Paths: string;
+    P: Integer;
+begin
+    { Skip if registry entry not exists }
+    if not RegQueryStringValue(HKEY_LOCAL_MACHINE, EnvironmentKey, 'Path', Paths) then
+        exit;
+
+    { Skip if string not found in path }
+    P := Pos(';' + Uppercase(Path) + ';', ';' + Uppercase(Paths) + ';');
+    if P = 0 then exit;
+
+    { Update path variable }
+    Delete(Paths, P - 1, Length(Path) + 1);
+
+    { Overwrite path environment variable }
+    if RegWriteStringValue(HKEY_LOCAL_MACHINE, EnvironmentKey, 'Path', Paths)
+    then Log(Format('The [%s] removed from PATH: [%s]', [Path, Paths]))
+    else Log(Format('Error while removing the [%s] from PATH: [%s]', [Path, Paths]));
+end;
+
+procedure CurStepChanged(CurStep: TSetupStep);
+begin
+  if CurStep = ssPostInstall 
+   then begin 
+    EnvAddPath(ExpandConstant('{app}') + '\loader\arm64');
+    EnvAddPath(ExpandConstant('{app}') + '\loader\x64');
+    EnvAddPath(ExpandConstant('{app}') + '\loader\x86');
+	end;
+end;
+
+procedure CurUninstallStepChanged(CurUninstallStep: TUninstallStep);
+begin
+  if CurUninstallStep = usPostUninstall
+  then begin 
+	  EnvRemovePath(ExpandConstant('{app}') + '\loader\arm64');
+	  EnvRemovePath(ExpandConstant('{app}') + '\loader\x64');
+	  EnvRemovePath(ExpandConstant('{app}') + '\loader\x86');
+	end;
+end;
 
 [Registry]
 Root: HKLM32; Subkey: "SOFTWARE\Khronos\Vulkan\Drivers"; ValueType: dword; ValueName: "{app}\x86\dzn_icd.x86.json"; ValueData: 0x0; Flags: uninsdeletevalue
