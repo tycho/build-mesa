@@ -249,6 +249,7 @@ cmake --install vkloader.build.x64
 
 rem build installer
 
+python gen-version.py || exit /b 1
 python patch-icds.py || exit /b 1
 "C:\Program Files (x86)\Windows Kits\10\bin\10.0.22621.0\x64\signtool.exe" sign /a /n "Uplink Laboratories" /fd SHA256 /td SHA256 /tr http://timestamp.digicert.com mesa.prefix\x86\bin\*.dll mesa.prefix\x86\bin\*.exe vkloader.prefix\x86\bin\*.dll mesa.prefix\x64\bin\*.dll mesa.prefix\x64\bin\*.exe vkloader.prefix\x64\bin\*.dll mesa.prefix\arm64\bin\*.dll mesa.prefix\arm64\bin\*.exe vkloader.prefix\arm64\bin\*.dll
 start /wait cmd /c "C:\Program Files (x86)\Inno Setup 6\Compil32.exe" /cc install-mesa-dozen-vk.iss || exit /b 1
