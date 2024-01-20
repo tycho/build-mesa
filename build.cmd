@@ -1,7 +1,8 @@
 @echo off
 setlocal enabledelayedexpansion
 
-set MESA_VERSION=24.0.0-rc2
+set MESA_BRANCH=24.0
+set VKLOADER_BRANCH=vulkan-sdk-1.3.275
 set WINSDK_VER=10.0.22621.0
 
 set PATH=%CD%\winflexbison;%PATH%
@@ -84,15 +85,6 @@ set VS170COMNTOOLS=!VS!\Common7\Tools\
 
 rem *** download sources ***
 
-if not exist mesa.src (
-  echo Downloading mesa
-  curl -sfL https://archive.mesa3d.org/mesa-%MESA_VERSION%.tar.xz ^
-    | %SZIP% x -bb0 -txz -si -so ^
-    | %SZIP% x -bb0 -ttar -si -aoa 1>nul 2>nul
-  move mesa-%MESA_VERSION% mesa.src
-  git apply -p0 --directory=mesa.src mesa.patch || exit /b 1
-)
-
 if not exist winflexbison (
   echo Downloading win_flex_bison
   mkdir winflexbison
@@ -103,10 +95,33 @@ if not exist winflexbison (
   popd
 )
 
+if not exist mesa.src (
+  echo Cloning Mesa sources from git
+  git clone https://gitlab.freedesktop.org/mesa/mesa.git mesa.src
+)
+cd mesa.src
+
+rem Git options that help with Windows git clones
+git config core.ignoreCase true
+git config core.filemode false
+
+git checkout -t origin/%MESA_BRANCH% || git checkout %MESA_BRANCH%
+git pull
+cd ..
+
 if not exist vkloader.src (
   echo Cloning Vulkan loader from git
-  git clone https://github.com/KhronosGroup/Vulkan-Loader vkloader.src
+  git clone https://github.com/KhronosGroup/Vulkan-Loader.git vkloader.src
 )
+cd vkloader.src
+
+rem Git options that help with Windows git clones
+git config core.ignoreCase true
+git config core.filemode false
+
+git checkout -t origin/%VKLOADER_BRANCH% || git checkout %VKLOADER_BRANCH%
+git pull
+cd ..
 
 
 rem x86 build
