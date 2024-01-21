@@ -3,7 +3,7 @@
 
 #define MESA_DIST "mesa-gl-" + MESA_VERSION
 
-#define MyAppName "Mesa OpenGL"
+#define MyAppName "Mesa OpenGL Driver"
 #define MyAppVersion MESA_VERSION
 #define MyAppPublisher "Uplink Laboratories, LLC"
 #define MyAppURL "https://gitlab.freedesktop.org/mesa/mesa"
