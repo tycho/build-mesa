@@ -4,6 +4,7 @@ setlocal enabledelayedexpansion
 set MESA_BRANCH=24.0
 set VKLOADER_BRANCH=vulkan-sdk-1.3.275
 set WINSDK_VER=10.0.22621.0
+set ENABLE_DBGSYM=0
 
 set PATH=%CD%\winflexbison;%PATH%
 
@@ -99,12 +100,15 @@ if not exist mesa.src (
   echo Cloning Mesa sources from git
   git clone https://gitlab.freedesktop.org/mesa/mesa.git mesa.src
 )
+
+echo Updating Mesa source tree
 cd mesa.src
 
 rem Git options that help with Windows git clones
 git config core.ignoreCase true
 git config core.filemode false
 
+git checkout .
 git checkout -t origin/%MESA_BRANCH% || git checkout %MESA_BRANCH%
 git pull
 cd ..
@@ -113,18 +117,36 @@ if not exist vkloader.src (
   echo Cloning Vulkan loader from git
   git clone https://github.com/KhronosGroup/Vulkan-Loader.git vkloader.src
 )
+
+echo Updating Vulkan loader source tree
 cd vkloader.src
 
 rem Git options that help with Windows git clones
 git config core.ignoreCase true
 git config core.filemode false
 
+git checkout .
 git checkout -t origin/%VKLOADER_BRANCH% || git checkout %VKLOADER_BRANCH%
 git pull
+git apply --verbose ..\vkloader-install-pdb.patch || exit /b 1
 cd ..
+
+if "x%ENABLE_DBGSYM%"=="x0" (
+	set CMAKE_BUILDTYPE=Release
+	set MESON_BUILDTYPE=release
+	type nul > install-config.iss
+)
+if "x%ENABLE_DBGSYM%"=="x1" (
+	set CMAKE_BUILDTYPE=RelWithDebInfo
+	set MESON_BUILDTYPE=debugoptimized
+	(
+		echo #define ENABLE_DBGSYM
+	) > install-config.iss
+)
 
 rem remove old install prefixes
 
+echo Removing old installation prefixes
 rd /s/q .\mesa.prefix.gl
 rd /s/q .\mesa.prefix.vk
 rd /s/q .\vkloader.prefix
@@ -143,8 +165,8 @@ meson setup ^
   --cross-file=cross-x86.txt ^
   --prefix="%CD%\mesa.prefix.vk\x86" ^
   --default-library=static ^
+  --buildtype=%MESON_BUILDTYPE% ^
   -Dmin-windows-version=10 ^
-  -Dbuildtype=release ^
   -Db_ndebug=true ^
   -Db_vscrt=mt ^
   -Dllvm=disabled ^
@@ -169,8 +191,8 @@ meson setup ^
   --cross-file=cross-x86.txt ^
   --prefix="%CD%\mesa.prefix.gl\x86" ^
   --default-library=static ^
+  --buildtype=%MESON_BUILDTYPE% ^
   -Dmin-windows-version=10 ^
-  -Dbuildtype=release ^
   -Db_ndebug=true ^
   -Db_vscrt=mt ^
   -Dllvm=disabled ^
@@ -188,7 +210,7 @@ ninja -C mesa.build.gl.x86 install || exit /b 1
 cmake -G Ninja ^
   -S vkloader.src ^
   -B vkloader.build.x86 ^
-  -DCMAKE_BUILD_TYPE=Release ^
+  -DCMAKE_BUILD_TYPE=%CMAKE_BUILDTYPE% ^
   -DCMAKE_INSTALL_PREFIX="%CD%\vkloader.prefix\x86" ^
   -DUPDATE_DEPS=ON
 cmake --build vkloader.build.x86
@@ -208,8 +230,8 @@ meson setup ^
   --cross-file=cross-arm64.txt ^
   --prefix="%CD%\mesa.prefix.vk\arm64" ^
   --default-library=static ^
+  --buildtype=%MESON_BUILDTYPE% ^
   -Dmin-windows-version=10 ^
-  -Dbuildtype=release ^
   -Db_ndebug=true ^
   -Db_vscrt=mt ^
   -Dllvm=disabled ^
@@ -234,8 +256,8 @@ meson setup ^
   --cross-file=cross-arm64.txt ^
   --prefix="%CD%\mesa.prefix.gl\arm64" ^
   --default-library=static ^
+  --buildtype=%MESON_BUILDTYPE% ^
   -Dmin-windows-version=10 ^
-  -Dbuildtype=release ^
   -Db_ndebug=true ^
   -Db_vscrt=mt ^
   -Dllvm=disabled ^
@@ -253,7 +275,7 @@ ninja -C mesa.build.gl.arm64 install || exit /b 1
 cmake -G Ninja ^
   -S vkloader.src ^
   -B vkloader.build.arm64 ^
-  -DCMAKE_BUILD_TYPE=Release ^
+  -DCMAKE_BUILD_TYPE=%CMAKE_BUILDTYPE% ^
   -DCMAKE_INSTALL_PREFIX="%CD%\vkloader.prefix\arm64" ^
   -DUPDATE_DEPS=ON
 cmake --build vkloader.build.arm64
@@ -273,8 +295,8 @@ meson setup ^
   --cross-file=cross-x64.txt ^
   --prefix="%CD%\mesa.prefix.vk\x64" ^
   --default-library=static ^
+  --buildtype=%MESON_BUILDTYPE% ^
   -Dmin-windows-version=10 ^
-  -Dbuildtype=release ^
   -Db_ndebug=true ^
   -Db_vscrt=mt ^
   -Dllvm=disabled ^
@@ -299,8 +321,8 @@ meson setup ^
   --cross-file=cross-x64.txt ^
   --prefix="%CD%\mesa.prefix.gl\x64" ^
   --default-library=static ^
+  --buildtype=%MESON_BUILDTYPE% ^
   -Dmin-windows-version=10 ^
-  -Dbuildtype=release ^
   -Db_ndebug=true ^
   -Db_vscrt=mt ^
   -Dllvm=disabled ^
@@ -318,7 +340,7 @@ ninja -C mesa.build.gl.x64 install || exit /b 1
 cmake -G Ninja ^
   -S vkloader.src ^
   -B vkloader.build.x64 ^
-  -DCMAKE_BUILD_TYPE=Release ^
+  -DCMAKE_BUILD_TYPE=%CMAKE_BUILDTYPE% ^
   -DCMAKE_INSTALL_PREFIX="%CD%\vkloader.prefix\x64" ^
   -DUPDATE_DEPS=ON
 cmake --build vkloader.build.x64

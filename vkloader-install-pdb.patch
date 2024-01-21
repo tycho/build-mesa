@@ -1,0 +1,12 @@
+diff --git a/loader/CMakeLists.txt b/loader/CMakeLists.txt
+index df269befd..c695d9342 100644
+--- a/loader/CMakeLists.txt
++++ b/loader/CMakeLists.txt
+@@ -474,6 +474,7 @@ endif()
+ 
+ # Generate CMake Configuration File (IE: VulkanLoaderConfig.cmake)
+ install(TARGETS vulkan EXPORT VulkanLoaderConfig)
++install(FILES $<TARGET_PDB_FILE:vulkan> DESTINATION ${CMAKE_INSTALL_BINDIR} OPTIONAL)
+ set_target_properties(vulkan PROPERTIES EXPORT_NAME "Loader")
+ install(EXPORT VulkanLoaderConfig DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake/VulkanLoader NAMESPACE Vulkan::)
+ 

@@ -7,6 +7,7 @@ c_ld = 'link'
 cpp_ld = 'link'
 
 [properties]
+debug = true
 skip_sanity_check = true
 
 [host_machine]

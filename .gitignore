@@ -3,6 +3,7 @@
 /mesa.build.*
 /mesa.prefix.*
 /mesa.src
+/install-config.iss
 /version*.iss
 /vkloader.build.*
 /vkloader.prefix
