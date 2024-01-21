@@ -130,12 +130,12 @@ call "!VS!\Common7\Tools\vsdevcmd.bat" /clean_env || exit /b 1
 call "!VS!\VC\Auxiliary\Build\vcvarsall.bat" x86 %WINSDK_VER% || exit /b 1
 set PATH=%CD%\winflexbison;%PATH%
 
-rd /s /q mesa.build.x86 1>nul 2>nul
+rd /s /q mesa.build.vk.x86 1>nul 2>nul
 meson setup ^
-  mesa.build.x86 ^
+  mesa.build.vk.x86 ^
   mesa.src ^
   --cross-file=cross-x86.txt ^
-  --prefix="%CD%\mesa.prefix\x86" ^
+  --prefix="%CD%\mesa.prefix.vk\x86" ^
   --default-library=static ^
   -Dmin-windows-version=10 ^
   -Dbuildtype=release ^
@@ -144,16 +144,40 @@ meson setup ^
   -Dllvm=disabled ^
   -Dplatforms=windows ^
   -Dosmesa=false ^
-  -Dgallium-drivers=d3d12 ^
   -Dspirv-to-dxil=false ^
   -Dshared-glapi=enabled ^
+  -Dgallium-drivers="" ^
   -Dvulkan-drivers=microsoft-experimental ^
-  -Dvulkan-icd-dir="%CD%\mesa.prefix\x86\bin" ^
+  -Dvulkan-icd-dir="%CD%\mesa.prefix.vk\x86\bin" ^
   -Dopengl=false ^
   -Dgles1=disabled ^
-  -Dgles2=disabled || exit /b 1
-ninja -C mesa.build.x86 install || exit /b 1
-copy "C:\Program Files (x86)\Windows Kits\10\bin\%WINSDK_VER%\x86\dxil.dll" "%CD%\mesa.prefix\x86\bin\"
+  -Dgles2=disabled ^
+  -Degl=disabled || exit /b 1
+ninja -C mesa.build.vk.x86 install || exit /b 1
+copy "C:\Program Files (x86)\Windows Kits\10\bin\%WINSDK_VER%\x86\dxil.dll" "%CD%\mesa.prefix.vk\x86\bin\"
+
+rd /s /q mesa.build.gl.x86 1>nul 2>nul
+meson setup ^
+  mesa.build.gl.x86 ^
+  mesa.src ^
+  --cross-file=cross-x86.txt ^
+  --prefix="%CD%\mesa.prefix.gl\x86" ^
+  --default-library=static ^
+  -Dmin-windows-version=10 ^
+  -Dbuildtype=release ^
+  -Db_ndebug=true ^
+  -Db_vscrt=mt ^
+  -Dllvm=disabled ^
+  -Dplatforms=windows ^
+  -Dosmesa=false ^
+  -Dgallium-drivers=d3d12,zink ^
+  -Dspirv-to-dxil=false ^
+  -Dshared-glapi=enabled ^
+  -Dopengl=true ^
+  -Dgles1=enabled ^
+  -Dgles2=enabled ^
+  -Degl=enabled || exit /b 1
+ninja -C mesa.build.gl.x86 install || exit /b 1
 
 cmake -G Ninja ^
   -S vkloader.src ^
@@ -171,12 +195,12 @@ call "!VS!\Common7\Tools\vsdevcmd.bat" /clean_env || exit /b 1
 call "!VS!\VC\Auxiliary\Build\vcvarsall.bat" x64_arm64 %WINSDK_VER% || exit /b 1
 set PATH=%CD%\winflexbison;%PATH%
 
-rd /s /q mesa.build.arm64 1>nul 2>nul
+rd /s /q mesa.build.vk.arm64 1>nul 2>nul
 meson setup ^
-  mesa.build.arm64 ^
+  mesa.build.vk.arm64 ^
   mesa.src ^
   --cross-file=cross-arm64.txt ^
-  --prefix="%CD%\mesa.prefix\arm64" ^
+  --prefix="%CD%\mesa.prefix.vk\arm64" ^
   --default-library=static ^
   -Dmin-windows-version=10 ^
   -Dbuildtype=release ^
@@ -185,16 +209,40 @@ meson setup ^
   -Dllvm=disabled ^
   -Dplatforms=windows ^
   -Dosmesa=false ^
-  -Dgallium-drivers=d3d12 ^
   -Dspirv-to-dxil=false ^
   -Dshared-glapi=enabled ^
+  -Dgallium-drivers="" ^
   -Dvulkan-drivers=microsoft-experimental ^
-  -Dvulkan-icd-dir="%CD%\mesa.prefix\arm64\bin" ^
+  -Dvulkan-icd-dir="%CD%\mesa.prefix.vk\arm64\bin" ^
   -Dopengl=false ^
   -Dgles1=disabled ^
-  -Dgles2=disabled || exit /b 1
-ninja -C mesa.build.arm64 install || exit /b 1
-copy "C:\Program Files (x86)\Windows Kits\10\bin\%WINSDK_VER%\arm64\dxil.dll" "%CD%\mesa.prefix\arm64\bin\"
+  -Dgles2=disabled ^
+  -Degl=disabled || exit /b 1
+ninja -C mesa.build.vk.arm64 install || exit /b 1
+copy "C:\Program Files (x86)\Windows Kits\10\bin\%WINSDK_VER%\arm64\dxil.dll" "%CD%\mesa.prefix.vk\arm64\bin\"
+
+rd /s /q mesa.build.gl.arm64 1>nul 2>nul
+meson setup ^
+  mesa.build.gl.arm64 ^
+  mesa.src ^
+  --cross-file=cross-arm64.txt ^
+  --prefix="%CD%\mesa.prefix.gl\arm64" ^
+  --default-library=static ^
+  -Dmin-windows-version=10 ^
+  -Dbuildtype=release ^
+  -Db_ndebug=true ^
+  -Db_vscrt=mt ^
+  -Dllvm=disabled ^
+  -Dplatforms=windows ^
+  -Dosmesa=false ^
+  -Dgallium-drivers=d3d12,zink ^
+  -Dspirv-to-dxil=false ^
+  -Dshared-glapi=enabled ^
+  -Dopengl=true ^
+  -Dgles1=enabled ^
+  -Dgles2=enabled ^
+  -Degl=enabled || exit /b 1
+ninja -C mesa.build.gl.arm64 install || exit /b 1
 
 cmake -G Ninja ^
   -S vkloader.src ^
@@ -212,12 +260,12 @@ call "!VS!\Common7\Tools\vsdevcmd.bat" /clean_env || exit /b 1
 call "!VS!\VC\Auxiliary\Build\vcvarsall.bat" x64 %WINSDK_VER% || exit /b 1
 set PATH=%CD%\winflexbison;%PATH%
 
-rd /s /q mesa.build.x64 1>nul 2>nul
+rd /s /q mesa.build.vk.x64 1>nul 2>nul
 meson setup ^
-  mesa.build.x64 ^
+  mesa.build.vk.x64 ^
   mesa.src ^
   --cross-file=cross-x64.txt ^
-  --prefix="%CD%\mesa.prefix\x64" ^
+  --prefix="%CD%\mesa.prefix.vk\x64" ^
   --default-library=static ^
   -Dmin-windows-version=10 ^
   -Dbuildtype=release ^
@@ -226,16 +274,40 @@ meson setup ^
   -Dllvm=disabled ^
   -Dplatforms=windows ^
   -Dosmesa=false ^
-  -Dgallium-drivers=d3d12 ^
   -Dspirv-to-dxil=false ^
   -Dshared-glapi=enabled ^
+  -Dgallium-drivers="" ^
   -Dvulkan-drivers=microsoft-experimental ^
-  -Dvulkan-icd-dir="%CD%\mesa.prefix\x64\bin" ^
+  -Dvulkan-icd-dir="%CD%\mesa.prefix.vk\x64\bin" ^
   -Dopengl=false ^
   -Dgles1=disabled ^
-  -Dgles2=disabled || exit /b 1
-ninja -C mesa.build.x64 install || exit /b 1
-copy "C:\Program Files (x86)\Windows Kits\10\bin\%WINSDK_VER%\x64\dxil.dll" "%CD%\mesa.prefix\x64\bin\"
+  -Dgles2=disabled ^
+  -Degl=disabled || exit /b 1
+ninja -C mesa.build.vk.x64 install || exit /b 1
+copy "C:\Program Files (x86)\Windows Kits\10\bin\%WINSDK_VER%\x64\dxil.dll" "%CD%\mesa.prefix.vk\x64\bin\"
+
+rd /s /q mesa.build.gl.x64 1>nul 2>nul
+meson setup ^
+  mesa.build.gl.x64 ^
+  mesa.src ^
+  --cross-file=cross-x64.txt ^
+  --prefix="%CD%\mesa.prefix.gl\x64" ^
+  --default-library=static ^
+  -Dmin-windows-version=10 ^
+  -Dbuildtype=release ^
+  -Db_ndebug=true ^
+  -Db_vscrt=mt ^
+  -Dllvm=disabled ^
+  -Dplatforms=windows ^
+  -Dosmesa=false ^
+  -Dgallium-drivers=d3d12,zink ^
+  -Dspirv-to-dxil=false ^
+  -Dshared-glapi=enabled ^
+  -Dopengl=true ^
+  -Dgles1=enabled ^
+  -Dgles2=enabled ^
+  -Degl=enabled || exit /b 1
+ninja -C mesa.build.gl.x64 install || exit /b 1
 
 cmake -G Ninja ^
   -S vkloader.src ^
@@ -251,6 +323,16 @@ rem build installer
 
 python gen-version.py || exit /b 1
 python patch-icds.py || exit /b 1
-"C:\Program Files (x86)\Windows Kits\10\bin\10.0.22621.0\x64\signtool.exe" sign /a /n "Uplink Laboratories" /fd SHA256 /td SHA256 /tr http://timestamp.digicert.com mesa.prefix\x86\bin\*.dll mesa.prefix\x86\bin\*.exe vkloader.prefix\x86\bin\*.dll mesa.prefix\x64\bin\*.dll mesa.prefix\x64\bin\*.exe vkloader.prefix\x64\bin\*.dll mesa.prefix\arm64\bin\*.dll mesa.prefix\arm64\bin\*.exe vkloader.prefix\arm64\bin\*.dll
-start /wait cmd /c "C:\Program Files (x86)\Inno Setup 6\Compil32.exe" /cc install-mesa-dozen-vk.iss || exit /b 1
-"C:\Program Files (x86)\Windows Kits\10\bin\10.0.22621.0\x64\signtool.exe" sign /a /n "Uplink Laboratories" /fd SHA256 /td SHA256 /tr http://timestamp.digicert.com Output\*exe
+
+"C:\Program Files (x86)\Windows Kits\10\bin\10.0.22621.0\x64\signtool.exe" sign /a /n "Uplink Laboratories" /fd SHA256 /td SHA256 /tr http://timestamp.digicert.com ^
+  mesa.prefix.vk\x86\bin\*.dll mesa.prefix.vk\x86\bin\*.exe vkloader.prefix\x86\bin\*.dll ^
+  mesa.prefix.vk\x64\bin\*.dll mesa.prefix.vk\x64\bin\*.exe vkloader.prefix\x64\bin\*.dll ^
+  mesa.prefix.vk\arm64\bin\*.dll mesa.prefix.vk\arm64\bin\*.exe vkloader.prefix\arm64\bin\*.dll ^
+  mesa.prefix.gl\x86\bin\*.dll ^
+  mesa.prefix.gl\x64\bin\*.dll ^
+  mesa.prefix.gl\arm64\bin\*.dll
+
+start /wait cmd /c "C:\Program Files (x86)\Inno Setup 6\Compil32.exe" /cc install-mesa-dozen.iss || exit /b 1
+start /wait cmd /c "C:\Program Files (x86)\Inno Setup 6\Compil32.exe" /cc install-mesa-gl.iss || exit /b 1
+"C:\Program Files (x86)\Windows Kits\10\bin\10.0.22621.0\x64\signtool.exe" sign /a /n "Uplink Laboratories" /fd SHA256 /td SHA256 /tr http://timestamp.digicert.com ^
+  Output\*.exe

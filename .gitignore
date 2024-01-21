@@ -1,9 +1,9 @@
 *.exe
 *.zip
 /mesa.build.*
-/mesa.prefix
+/mesa.prefix.*
 /mesa.src
-/version.iss
+/version*.iss
 /vkloader.build.*
 /vkloader.prefix
 /vkloader.src
