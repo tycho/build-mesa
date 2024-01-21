@@ -123,6 +123,12 @@ git checkout -t origin/%VKLOADER_BRANCH% || git checkout %VKLOADER_BRANCH%
 git pull
 cd ..
 
+rem remove old install prefixes
+
+rd /s/q .\mesa.prefix.gl
+rd /s/q .\mesa.prefix.vk
+rd /s/q .\vkloader.prefix
+
 
 rem x86 build
 
