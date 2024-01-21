@@ -1,1 +1,3 @@
-*.patch eol=lf
+*.cmd text eol=crlf
+*.iss text eol=crlf
+*.patch -text -whitespace
