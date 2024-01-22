@@ -205,14 +205,15 @@ meson setup ^
   -Degl=enabled || exit /b 1
 ninja -C mesa.build.gl.x86 install || exit /b 1
 
+rd /s/q vkloader.build.x86
 cmake -G Ninja ^
   -S vkloader.src ^
   -B vkloader.build.x86 ^
   -DCMAKE_BUILD_TYPE=%CMAKE_BUILDTYPE% ^
   -DCMAKE_INSTALL_PREFIX="%CD%\vkloader.prefix\x86" ^
-  -DUPDATE_DEPS=ON
-cmake --build vkloader.build.x86
-cmake --install vkloader.build.x86
+  -DUPDATE_DEPS=ON || exit /b 1
+cmake --build vkloader.build.x86 || exit /b 1
+cmake --install vkloader.build.x86 || exit /b 1
 
 
 rem arm64 build
@@ -270,14 +271,15 @@ meson setup ^
   -Degl=enabled || exit /b 1
 ninja -C mesa.build.gl.arm64 install || exit /b 1
 
+rd /s/q vkloader.build.arm64
 cmake -G Ninja ^
   -S vkloader.src ^
   -B vkloader.build.arm64 ^
   -DCMAKE_BUILD_TYPE=%CMAKE_BUILDTYPE% ^
   -DCMAKE_INSTALL_PREFIX="%CD%\vkloader.prefix\arm64" ^
-  -DUPDATE_DEPS=ON
-cmake --build vkloader.build.arm64
-cmake --install vkloader.build.arm64
+  -DUPDATE_DEPS=ON || exit /b 1
+cmake --build vkloader.build.arm64 || exit /b 1
+cmake --install vkloader.build.arm64 || exit /b 1
 
 
 rem x64 build
@@ -335,14 +337,15 @@ meson setup ^
   -Degl=enabled || exit /b 1
 ninja -C mesa.build.gl.x64 install || exit /b 1
 
+rd /s/q vkloader.build.x64
 cmake -G Ninja ^
   -S vkloader.src ^
   -B vkloader.build.x64 ^
   -DCMAKE_BUILD_TYPE=%CMAKE_BUILDTYPE% ^
   -DCMAKE_INSTALL_PREFIX="%CD%\vkloader.prefix\x64" ^
-  -DUPDATE_DEPS=ON
-cmake --build vkloader.build.x64
-cmake --install vkloader.build.x64
+  -DUPDATE_DEPS=ON || exit /b 1
+cmake --build vkloader.build.x64 || exit /b 1
+cmake --install vkloader.build.x64 || exit /b 1
 
 
 rem build installer
