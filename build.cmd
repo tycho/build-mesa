@@ -7,6 +7,7 @@ set WINSDK_VER=10.0.22621.0
 set ENABLE_DBGSYM=0
 
 set PATH=%CD%\winflexbison;%PATH%
+set VSCMD_SKIP_SENDTELEMETRY=1
 
 rem *** check dependencies ***
 
@@ -75,14 +76,11 @@ where /q ninja.exe || (
 rem *** Visual Studio environment ***
 
 set __VSCMD_ARG_NO_LOGO=1
-for /f "tokens=*" %%i in ('"%ProgramFiles(x86)%\Microsoft Visual Studio\Installer\vswhere.exe" -latest -requires Microsoft.VisualStudio.Workload.NativeDesktop -property installationPath') do set VS=%%i
+for /f "tokens=*" %%i in ('"%ProgramFiles(x86)%\Microsoft Visual Studio\Installer\vswhere.exe" -latest -prerelease -requires Microsoft.VisualStudio.Workload.NativeDesktop -property installationPath') do set VS=%%i
 if "!VS!" equ "" (
 	echo ERROR: Visual Studio installation not found
 	exit /b 1
 )  
-
-rem This is not set by vsdevcmd for whatever reason, which breaks our clean_env invocation, so set it now.
-set VS170COMNTOOLS=!VS!\Common7\Tools\
 
 rem *** download sources ***
 
@@ -153,8 +151,8 @@ rd /s/q .\vkloader.prefix
 
 
 rem x86 build
-
-call "!VS!\Common7\Tools\vsdevcmd.bat" /clean_env || exit /b 1
+rem Always ignore output of first vcvarsall.bat /clean_env, because it errors if the environment is already clean. *sigh*
+call "!VS!\VC\Auxiliary\Build\vcvarsall.bat" /clean_env >nul 2>nul
 call "!VS!\VC\Auxiliary\Build\vcvarsall.bat" x86 %WINSDK_VER% || exit /b 1
 set PATH=%CD%\winflexbison;%PATH%
 
@@ -219,7 +217,7 @@ cmake --install vkloader.build.x86
 
 rem arm64 build
 
-call "!VS!\Common7\Tools\vsdevcmd.bat" /clean_env || exit /b 1
+call "!VS!\VC\Auxiliary\Build\vcvarsall.bat" /clean_env || exit /b 1
 call "!VS!\VC\Auxiliary\Build\vcvarsall.bat" x64_arm64 %WINSDK_VER% || exit /b 1
 set PATH=%CD%\winflexbison;%PATH%
 
@@ -284,7 +282,7 @@ cmake --install vkloader.build.arm64
 
 rem x64 build
 
-call "!VS!\Common7\Tools\vsdevcmd.bat" /clean_env || exit /b 1
+call "!VS!\VC\Auxiliary\Build\vcvarsall.bat" /clean_env || exit /b 1
 call "!VS!\VC\Auxiliary\Build\vcvarsall.bat" x64 %WINSDK_VER% || exit /b 1
 set PATH=%CD%\winflexbison;%PATH%
 
