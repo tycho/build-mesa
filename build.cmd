@@ -132,11 +132,13 @@ cd ..
 if "x%ENABLE_DBGSYM%"=="x0" (
 	set CMAKE_BUILDTYPE=Release
 	set MESON_BUILDTYPE=release
+	set MESON_NDEBUG=true
 	type nul > install-config.iss
 )
 if "x%ENABLE_DBGSYM%"=="x1" (
 	set CMAKE_BUILDTYPE=RelWithDebInfo
 	set MESON_BUILDTYPE=debugoptimized
+	set MESON_NDEBUG=true
 	(
 		echo #define ENABLE_DBGSYM
 	) > install-config.iss
@@ -165,7 +167,7 @@ meson setup ^
   --default-library=static ^
   --buildtype=%MESON_BUILDTYPE% ^
   -Dmin-windows-version=10 ^
-  -Db_ndebug=true ^
+  -Db_ndebug=%MESON_NDEBUG% ^
   -Db_vscrt=mt ^
   -Dllvm=disabled ^
   -Dplatforms=windows ^
@@ -191,7 +193,7 @@ meson setup ^
   --default-library=static ^
   --buildtype=%MESON_BUILDTYPE% ^
   -Dmin-windows-version=10 ^
-  -Db_ndebug=true ^
+  -Db_ndebug=%MESON_NDEBUG% ^
   -Db_vscrt=mt ^
   -Dllvm=disabled ^
   -Dplatforms=windows ^
@@ -204,6 +206,7 @@ meson setup ^
   -Dgles2=enabled ^
   -Degl=enabled || exit /b 1
 ninja -C mesa.build.gl.x86 install || exit /b 1
+copy "C:\Program Files (x86)\Windows Kits\10\bin\%WINSDK_VER%\x86\dxil.dll" "%CD%\mesa.prefix.gl\x86\bin\"
 
 rd /s/q vkloader.build.x86
 cmake -G Ninja ^
@@ -231,7 +234,7 @@ meson setup ^
   --default-library=static ^
   --buildtype=%MESON_BUILDTYPE% ^
   -Dmin-windows-version=10 ^
-  -Db_ndebug=true ^
+  -Db_ndebug=%MESON_NDEBUG% ^
   -Db_vscrt=mt ^
   -Dllvm=disabled ^
   -Dplatforms=windows ^
@@ -257,7 +260,7 @@ meson setup ^
   --default-library=static ^
   --buildtype=%MESON_BUILDTYPE% ^
   -Dmin-windows-version=10 ^
-  -Db_ndebug=true ^
+  -Db_ndebug=%MESON_NDEBUG% ^
   -Db_vscrt=mt ^
   -Dllvm=disabled ^
   -Dplatforms=windows ^
@@ -270,6 +273,7 @@ meson setup ^
   -Dgles2=enabled ^
   -Degl=enabled || exit /b 1
 ninja -C mesa.build.gl.arm64 install || exit /b 1
+copy "C:\Program Files (x86)\Windows Kits\10\bin\%WINSDK_VER%\arm64\dxil.dll" "%CD%\mesa.prefix.gl\arm64\bin\"
 
 rd /s/q vkloader.build.arm64
 cmake -G Ninja ^
@@ -297,7 +301,7 @@ meson setup ^
   --default-library=static ^
   --buildtype=%MESON_BUILDTYPE% ^
   -Dmin-windows-version=10 ^
-  -Db_ndebug=true ^
+  -Db_ndebug=%MESON_NDEBUG% ^
   -Db_vscrt=mt ^
   -Dllvm=disabled ^
   -Dplatforms=windows ^
@@ -323,7 +327,7 @@ meson setup ^
   --default-library=static ^
   --buildtype=%MESON_BUILDTYPE% ^
   -Dmin-windows-version=10 ^
-  -Db_ndebug=true ^
+  -Db_ndebug=%MESON_NDEBUG% ^
   -Db_vscrt=mt ^
   -Dllvm=disabled ^
   -Dplatforms=windows ^
@@ -336,6 +340,7 @@ meson setup ^
   -Dgles2=enabled ^
   -Degl=enabled || exit /b 1
 ninja -C mesa.build.gl.x64 install || exit /b 1
+copy "C:\Program Files (x86)\Windows Kits\10\bin\%WINSDK_VER%\x64\dxil.dll" "%CD%\mesa.prefix.gl\x64\bin\"
 
 rd /s/q vkloader.build.x64
 cmake -G Ninja ^
