@@ -35,7 +35,7 @@ where /q meson.exe || (
 )
 
 python -c "import mako" 2>nul || (
-  pip install mako
+  pip install mako packaging
   python -c "import mako" 2>nul || (
     echo ERROR: "mako" module not found for python
     exit /b 1
