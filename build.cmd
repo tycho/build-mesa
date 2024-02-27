@@ -5,6 +5,7 @@ set MESA_BRANCH=24.0
 set VKLOADER_BRANCH=vulkan-sdk-1.3.275
 set WINSDK_VER=10.0.22621.0
 set ENABLE_DBGSYM=0
+set ENABLE_INSTALLER=1
 set ENABLE_CLEAN=1
 
 set PATH=%CD%\winflexbison;%PATH%
@@ -353,19 +354,21 @@ cmake --install vkloader.build.x64
 
 
 rem build installer
+if "x%ENABLE_INSTALLER%"=="x1" (
 
-python gen-version.py || exit /b 1
-python patch-icds.py || exit /b 1
+	python gen-version.py || exit /b 1
+	python patch-icds.py || exit /b 1
 
-"C:\Program Files (x86)\Windows Kits\10\bin\10.0.22621.0\x64\signtool.exe" sign /a /n "Uplink Laboratories" /fd SHA256 /td SHA256 /tr http://timestamp.digicert.com ^
-  mesa.prefix.vk\x86\bin\*.dll mesa.prefix.vk\x86\bin\*.exe vkloader.prefix\x86\bin\*.dll ^
-  mesa.prefix.vk\x64\bin\*.dll mesa.prefix.vk\x64\bin\*.exe vkloader.prefix\x64\bin\*.dll ^
-  mesa.prefix.vk\arm64\bin\*.dll mesa.prefix.vk\arm64\bin\*.exe vkloader.prefix\arm64\bin\*.dll ^
-  mesa.prefix.gl\x86\bin\*.dll ^
-  mesa.prefix.gl\x64\bin\*.dll ^
-  mesa.prefix.gl\arm64\bin\*.dll
+	"C:\Program Files (x86)\Windows Kits\10\bin\10.0.22621.0\x64\signtool.exe" sign /a /n "Uplink Laboratories" /fd SHA256 /td SHA256 /tr http://timestamp.digicert.com ^
+	  mesa.prefix.vk\x86\bin\*.dll mesa.prefix.vk\x86\bin\*.exe vkloader.prefix\x86\bin\*.dll ^
+	  mesa.prefix.vk\x64\bin\*.dll mesa.prefix.vk\x64\bin\*.exe vkloader.prefix\x64\bin\*.dll ^
+	  mesa.prefix.vk\arm64\bin\*.dll mesa.prefix.vk\arm64\bin\*.exe vkloader.prefix\arm64\bin\*.dll ^
+	  mesa.prefix.gl\x86\bin\*.dll ^
+	  mesa.prefix.gl\x64\bin\*.dll ^
+	  mesa.prefix.gl\arm64\bin\*.dll
 
-start /wait cmd /c "C:\Program Files (x86)\Inno Setup 6\Compil32.exe" /cc install-mesa-dozen.iss || exit /b 1
-start /wait cmd /c "C:\Program Files (x86)\Inno Setup 6\Compil32.exe" /cc install-mesa-gl.iss || exit /b 1
-"C:\Program Files (x86)\Windows Kits\10\bin\10.0.22621.0\x64\signtool.exe" sign /a /n "Uplink Laboratories" /fd SHA256 /td SHA256 /tr http://timestamp.digicert.com ^
-  Output\*.exe
+	start /wait cmd /c "C:\Program Files (x86)\Inno Setup 6\Compil32.exe" /cc install-mesa-dozen.iss || exit /b 1
+	start /wait cmd /c "C:\Program Files (x86)\Inno Setup 6\Compil32.exe" /cc install-mesa-gl.iss || exit /b 1
+	"C:\Program Files (x86)\Windows Kits\10\bin\10.0.22621.0\x64\signtool.exe" sign /a /n "Uplink Laboratories" /fd SHA256 /td SHA256 /tr http://timestamp.digicert.com ^
+	  Output\*.exe
+)
