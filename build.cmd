@@ -111,6 +111,9 @@ git config core.filemode false
 git checkout .
 git checkout -t origin/%MESA_BRANCH% || git checkout %MESA_BRANCH%
 git pull
+if "x%MESA_BRANCH%" == "xmain" (
+	git apply --verbose ..\patches\0001-add-libloader_wayland_helper-null-dependency.patch || exit /b 1
+)
 cd ..
 
 if not exist vkloader.src (
@@ -128,7 +131,7 @@ git config core.filemode false
 git checkout .
 git checkout -t origin/%VKLOADER_BRANCH% || git checkout %VKLOADER_BRANCH%
 git pull
-git apply --verbose ..\vkloader-install-pdb.patch || exit /b 1
+git apply --verbose ..\patches\vkloader-install-pdb.patch || exit /b 1
 cd ..
 
 if "x%ENABLE_DBGSYM%"=="x0" (
