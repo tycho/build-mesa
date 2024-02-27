@@ -134,11 +134,15 @@ cd ..
 if "x%ENABLE_DBGSYM%"=="x0" (
 	set CMAKE_BUILDTYPE=Release
 	set MESON_BUILDTYPE=release
+	set MESON_VSRUNTIME=mt
+	set MESON_NDEBUG=true
 	type nul > install-config.iss
 )
 if "x%ENABLE_DBGSYM%"=="x1" (
 	set CMAKE_BUILDTYPE=RelWithDebInfo
 	set MESON_BUILDTYPE=debugoptimized
+	set MESON_VSRUNTIME=mt
+	set MESON_NDEBUG=true
 	(
 		echo #define ENABLE_DBGSYM
 	) > install-config.iss
@@ -173,13 +177,14 @@ set PATH=%CD%\winflexbison;%PATH%
 meson setup ^
   mesa.build.vk.x86 ^
   mesa.src ^
+  --reconfigure ^
   --cross-file=cross-x86.txt ^
   --prefix="%CD%\mesa.prefix.vk\x86" ^
   --default-library=static ^
   --buildtype=%MESON_BUILDTYPE% ^
   -Dmin-windows-version=10 ^
-  -Db_ndebug=true ^
-  -Db_vscrt=mt ^
+  -Db_ndebug=%MESON_NDEBUG% ^
+  -Db_vscrt=%MESON_VSRUNTIME% ^
   -Dllvm=disabled ^
   -Dplatforms=windows ^
   -Dosmesa=false ^
@@ -198,13 +203,14 @@ copy "C:\Program Files (x86)\Windows Kits\10\bin\%WINSDK_VER%\x86\dxil.dll" "%CD
 meson setup ^
   mesa.build.gl.x86 ^
   mesa.src ^
+  --reconfigure ^
   --cross-file=cross-x86.txt ^
   --prefix="%CD%\mesa.prefix.gl\x86" ^
   --default-library=static ^
   --buildtype=%MESON_BUILDTYPE% ^
   -Dmin-windows-version=10 ^
-  -Db_ndebug=true ^
-  -Db_vscrt=mt ^
+  -Db_ndebug=%MESON_NDEBUG% ^
+  -Db_vscrt=%MESON_VSRUNTIME% ^
   -Dllvm=disabled ^
   -Dplatforms=windows ^
   -Dosmesa=false ^
@@ -236,13 +242,14 @@ set PATH=%CD%\winflexbison;%PATH%
 meson setup ^
   mesa.build.vk.arm64 ^
   mesa.src ^
+  --reconfigure ^
   --cross-file=cross-arm64.txt ^
   --prefix="%CD%\mesa.prefix.vk\arm64" ^
   --default-library=static ^
   --buildtype=%MESON_BUILDTYPE% ^
   -Dmin-windows-version=10 ^
-  -Db_ndebug=true ^
-  -Db_vscrt=mt ^
+  -Db_ndebug=%MESON_NDEBUG% ^
+  -Db_vscrt=%MESON_VSRUNTIME% ^
   -Dllvm=disabled ^
   -Dplatforms=windows ^
   -Dosmesa=false ^
@@ -261,13 +268,14 @@ copy "C:\Program Files (x86)\Windows Kits\10\bin\%WINSDK_VER%\arm64\dxil.dll" "%
 meson setup ^
   mesa.build.gl.arm64 ^
   mesa.src ^
+  --reconfigure ^
   --cross-file=cross-arm64.txt ^
   --prefix="%CD%\mesa.prefix.gl\arm64" ^
   --default-library=static ^
   --buildtype=%MESON_BUILDTYPE% ^
   -Dmin-windows-version=10 ^
-  -Db_ndebug=true ^
-  -Db_vscrt=mt ^
+  -Db_ndebug=%MESON_NDEBUG% ^
+  -Db_vscrt=%MESON_VSRUNTIME% ^
   -Dllvm=disabled ^
   -Dplatforms=windows ^
   -Dosmesa=false ^
@@ -299,13 +307,14 @@ set PATH=%CD%\winflexbison;%PATH%
 meson setup ^
   mesa.build.vk.x64 ^
   mesa.src ^
+  --reconfigure ^
   --cross-file=cross-x64.txt ^
   --prefix="%CD%\mesa.prefix.vk\x64" ^
   --default-library=static ^
   --buildtype=%MESON_BUILDTYPE% ^
   -Dmin-windows-version=10 ^
-  -Db_ndebug=true ^
-  -Db_vscrt=mt ^
+  -Db_ndebug=%MESON_NDEBUG% ^
+  -Db_vscrt=%MESON_VSRUNTIME% ^
   -Dllvm=disabled ^
   -Dplatforms=windows ^
   -Dosmesa=false ^
@@ -324,13 +333,14 @@ copy "C:\Program Files (x86)\Windows Kits\10\bin\%WINSDK_VER%\x64\dxil.dll" "%CD
 meson setup ^
   mesa.build.gl.x64 ^
   mesa.src ^
+  --reconfigure ^
   --cross-file=cross-x64.txt ^
   --prefix="%CD%\mesa.prefix.gl\x64" ^
   --default-library=static ^
   --buildtype=%MESON_BUILDTYPE% ^
   -Dmin-windows-version=10 ^
-  -Db_ndebug=true ^
-  -Db_vscrt=mt ^
+  -Db_ndebug=%MESON_NDEBUG% ^
+  -Db_vscrt=%MESON_VSRUNTIME% ^
   -Dllvm=disabled ^
   -Dplatforms=windows ^
   -Dosmesa=false ^
