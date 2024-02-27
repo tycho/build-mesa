@@ -5,6 +5,7 @@ set MESA_BRANCH=24.0
 set VKLOADER_BRANCH=vulkan-sdk-1.3.275
 set WINSDK_VER=10.0.22621.0
 set ENABLE_DBGSYM=0
+set ENABLE_CLEAN=1
 
 set PATH=%CD%\winflexbison;%PATH%
 set VSCMD_SKIP_SENDTELEMETRY=1
@@ -143,11 +144,23 @@ if "x%ENABLE_DBGSYM%"=="x1" (
 )
 
 rem remove old install prefixes
+if "x%ENABLE_CLEAN%"=="x1" (
+	echo Removing old installation prefixes
+	rd /s/q .\mesa.prefix.gl 1>nul 2>nul
+	rd /s/q .\mesa.prefix.vk 1>nul 2>nul
+	rd /s/q .\vkloader.prefix 1>nul 2>nul
 
-echo Removing old installation prefixes
-rd /s/q .\mesa.prefix.gl
-rd /s/q .\mesa.prefix.vk
-rd /s/q .\vkloader.prefix
+	rd /s/q .\mesa.build.vk.x86 1>nul 2>nul
+	rd /s/q .\mesa.build.gl.x86 1>nul 2>nul
+	rd /s/q .\mesa.build.vk.arm64 1>nul 2>nul
+	rd /s/q .\mesa.build.gl.arm64 1>nul 2>nul
+	rd /s/q .\mesa.build.vk.x64 1>nul 2>nul
+	rd /s/q .\mesa.build.gl.x64 1>nul 2>nul
+
+	rd /s/q .\vkloader.build.x86 1>nul 2>nul
+	rd /s/q .\vkloader.build.arm64 1>nul 2>nul
+	rd /s/q .\vkloader.build.x64 1>nul 2>nul
+)
 
 
 rem x86 build
@@ -156,7 +169,6 @@ call "!VS!\VC\Auxiliary\Build\vcvarsall.bat" /clean_env >nul 2>nul
 call "!VS!\VC\Auxiliary\Build\vcvarsall.bat" x86 %WINSDK_VER% || exit /b 1
 set PATH=%CD%\winflexbison;%PATH%
 
-rd /s /q mesa.build.vk.x86 1>nul 2>nul
 meson setup ^
   mesa.build.vk.x86 ^
   mesa.src ^
@@ -182,7 +194,6 @@ meson setup ^
 ninja -C mesa.build.vk.x86 install || exit /b 1
 copy "C:\Program Files (x86)\Windows Kits\10\bin\%WINSDK_VER%\x86\dxil.dll" "%CD%\mesa.prefix.vk\x86\bin\"
 
-rd /s /q mesa.build.gl.x86 1>nul 2>nul
 meson setup ^
   mesa.build.gl.x86 ^
   mesa.src ^
@@ -221,7 +232,6 @@ call "!VS!\VC\Auxiliary\Build\vcvarsall.bat" /clean_env || exit /b 1
 call "!VS!\VC\Auxiliary\Build\vcvarsall.bat" x64_arm64 %WINSDK_VER% || exit /b 1
 set PATH=%CD%\winflexbison;%PATH%
 
-rd /s /q mesa.build.vk.arm64 1>nul 2>nul
 meson setup ^
   mesa.build.vk.arm64 ^
   mesa.src ^
@@ -247,7 +257,6 @@ meson setup ^
 ninja -C mesa.build.vk.arm64 install || exit /b 1
 copy "C:\Program Files (x86)\Windows Kits\10\bin\%WINSDK_VER%\arm64\dxil.dll" "%CD%\mesa.prefix.vk\arm64\bin\"
 
-rd /s /q mesa.build.gl.arm64 1>nul 2>nul
 meson setup ^
   mesa.build.gl.arm64 ^
   mesa.src ^
@@ -286,7 +295,6 @@ call "!VS!\VC\Auxiliary\Build\vcvarsall.bat" /clean_env || exit /b 1
 call "!VS!\VC\Auxiliary\Build\vcvarsall.bat" x64 %WINSDK_VER% || exit /b 1
 set PATH=%CD%\winflexbison;%PATH%
 
-rd /s /q mesa.build.vk.x64 1>nul 2>nul
 meson setup ^
   mesa.build.vk.x64 ^
   mesa.src ^
@@ -312,7 +320,6 @@ meson setup ^
 ninja -C mesa.build.vk.x64 install || exit /b 1
 copy "C:\Program Files (x86)\Windows Kits\10\bin\%WINSDK_VER%\x64\dxil.dll" "%CD%\mesa.prefix.vk\x64\bin\"
 
-rd /s /q mesa.build.gl.x64 1>nul 2>nul
 meson setup ^
   mesa.build.gl.x64 ^
   mesa.src ^
