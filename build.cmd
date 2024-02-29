@@ -108,12 +108,10 @@ rem Git options that help with Windows git clones
 git config core.ignoreCase true
 git config core.filemode false
 
+git reset
 git checkout .
 git checkout -t origin/%MESA_BRANCH% || git checkout %MESA_BRANCH%
 git pull
-if "x%MESA_BRANCH%" == "xmain" (
-	git apply --verbose ..\patches\0001-add-libloader_wayland_helper-null-dependency.patch || exit /b 1
-)
 cd ..
 
 if not exist vkloader.src (
@@ -128,6 +126,7 @@ rem Git options that help with Windows git clones
 git config core.ignoreCase true
 git config core.filemode false
 
+git reset
 git checkout .
 git checkout -t origin/%VKLOADER_BRANCH% || git checkout %VKLOADER_BRANCH%
 git pull
