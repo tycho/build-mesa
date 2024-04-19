@@ -112,6 +112,7 @@ git reset
 git checkout .
 git checkout -t origin/%MESA_BRANCH% || git checkout %MESA_BRANCH%
 git pull
+git apply --verbose ..\patches\mesa-unused-local-var.patch
 cd ..
 
 if not exist vkloader.src (

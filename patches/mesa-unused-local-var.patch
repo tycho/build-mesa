@@ -1,0 +1,14 @@
+diff --git a/src/gallium/drivers/zink/zink_compiler.c b/src/gallium/drivers/zink/zink_compiler.c
+index 2687cae3d44..3596cb14103 100644
+--- a/src/gallium/drivers/zink/zink_compiler.c
++++ b/src/gallium/drivers/zink/zink_compiler.c
+@@ -5470,7 +5470,9 @@ create_io_var(nir_shader *nir, struct rework_io_state *ris)
+ static void
+ loop_io_var_mask(nir_shader *nir, nir_variable_mode mode, bool indirect, bool patch, uint64_t mask)
+ {
++#ifdef _DEBUG
+    bool is_vertex_input = nir->info.stage == MESA_SHADER_VERTEX && mode == nir_var_shader_in;
++#endif
+    u_foreach_bit64(slot, mask) {
+       if (patch)
+          slot += VARYING_SLOT_PATCH0;
