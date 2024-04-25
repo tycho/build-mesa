@@ -1,8 +1,8 @@
 @echo off
 setlocal enabledelayedexpansion
 
-set MESA_BRANCH=24.0
-set VKLOADER_BRANCH=vulkan-sdk-1.3.275
+set MESA_BRANCH=24.1
+set VKLOADER_BRANCH=vulkan-sdk-1.3.280
 set WINSDK_VER=10.0.22621.0
 set ENABLE_DBGSYM=0
 set ENABLE_INSTALLER=1
