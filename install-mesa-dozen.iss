@@ -128,6 +128,8 @@ end;
 Root: HKLM32; Subkey: "SOFTWARE\Khronos\Vulkan\Drivers"; ValueType: dword; ValueName: "{app}\x86\dzn_icd.i686.json"; ValueData: 0x0; Flags: uninsdeletevalue
 Root: HKLM64; Subkey: "SOFTWARE\Khronos\Vulkan\Drivers"; ValueType: dword; ValueName: "{app}\x64\dzn_icd.x86_64.json"; ValueData: 0x0; Flags: uninsdeletevalue
 Root: HKLM64; Subkey: "SOFTWARE\Khronos\Vulkan\Drivers"; ValueType: dword; ValueName: "{app}\arm64\dzn_icd.armv8.json"; ValueData: 0x0; Flags: uninsdeletevalue
+Root: HKLM64; Subkey: "SYSTEM\CurrentControlSet\Control\Session Manager\Environment"; ValueType: string; ValueName: "MesaDozenSDKRoot"; ValueData: "{app}\"; Flags: uninsdeletevalue
+Root: HKLM32; Subkey: "SYSTEM\CurrentControlSet\Control\Session Manager\Environment"; ValueType: string; ValueName: "MesaDozenSDKRoot"; ValueData: "{app}\"; Flags: uninsdeletevalue
 
 [UninstallDelete]
 Type: filesandordirs; Name: "{app}"

@@ -129,5 +129,8 @@ Root: HKLM64; Subkey: "SOFTWARE\Microsoft\Windows NT\CurrentVersion\OpenGLDriver
 Root: HKLM64; Subkey: "SOFTWARE\Microsoft\Windows NT\CurrentVersion\OpenGLDrivers\MSOGL"; ValueType: dword; ValueName: "Flags"; ValueData: 0x1; Flags: uninsdeletevalue
 Root: HKLM64; Subkey: "SOFTWARE\Microsoft\Windows NT\CurrentVersion\OpenGLDrivers\MSOGL"; ValueType: dword; ValueName: "Version"; ValueData: 0x2; Flags: uninsdeletevalue
 
+Root: HKLM64; Subkey: "SYSTEM\CurrentControlSet\Control\Session Manager\Environment"; ValueType: string; ValueName: "MesaGLSDKRoot"; ValueData: "{app}\"; Flags: uninsdeletevalue
+Root: HKLM32; Subkey: "SYSTEM\CurrentControlSet\Control\Session Manager\Environment"; ValueType: string; ValueName: "MesaGLSDKRoot"; ValueData: "{app}\"; Flags: uninsdeletevalue
+
 [UninstallDelete]
 Type: filesandordirs; Name: "{app}"
