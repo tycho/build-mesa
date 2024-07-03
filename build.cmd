@@ -112,7 +112,7 @@ git reset
 git checkout .
 git checkout -t origin/%MESA_BRANCH% || git checkout %MESA_BRANCH%
 git pull
-git apply --verbose ..\patches\mesa-unused-local-var.patch
+git apply --verbose ..\patches\mesa-unused-local-var.patch || exit /b 1
 cd ..
 
 if not exist vkloader.src (
@@ -174,7 +174,7 @@ if "x%ENABLE_CLEAN%"=="x1" (
 rem x86 build
 rem Always ignore output of first vcvarsall.bat /clean_env, because it errors if the environment is already clean. *sigh*
 call "!VS!\VC\Auxiliary\Build\vcvarsall.bat" /clean_env >nul 2>nul
-call "!VS!\VC\Auxiliary\Build\vcvarsall.bat" x86 %WINSDK_VER% || exit /b 1
+call "!VS!\VC\Auxiliary\Build\vcvarsall.bat" x64_x86 %WINSDK_VER% || exit /b 1
 set PATH=%CD%\winflexbison;%PATH%
 
 meson setup ^

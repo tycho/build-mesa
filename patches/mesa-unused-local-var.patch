@@ -1,8 +1,8 @@
 diff --git a/src/gallium/drivers/zink/zink_compiler.c b/src/gallium/drivers/zink/zink_compiler.c
-index 2687cae3d44..3596cb14103 100644
+index 13db0aa5f6d..0b4e22f4c29 100644
 --- a/src/gallium/drivers/zink/zink_compiler.c
 +++ b/src/gallium/drivers/zink/zink_compiler.c
-@@ -5470,7 +5470,9 @@ create_io_var(nir_shader *nir, struct rework_io_state *ris)
+@@ -5500,7 +5500,9 @@ create_io_var(nir_shader *nir, struct rework_io_state *ris)
  static void
  loop_io_var_mask(nir_shader *nir, nir_variable_mode mode, bool indirect, bool patch, uint64_t mask)
  {
