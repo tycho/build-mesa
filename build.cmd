@@ -170,11 +170,20 @@ if "x%ENABLE_CLEAN%"=="x1" (
 	rd /s/q .\vkloader.build.x64 1>nul 2>nul
 )
 
+set CFGID_X86=x64_x86
+set CFGID_X64=x64
+set CFGID_ARM64=x64_arm64
+
+if "x%PROCESSOR_ARCHITECTURE%"=="xARM64" (
+	set CFGID_X86=arm64_x86
+	set CFGID_X64=arm64_x64
+	set CFGID_ARM64=arm64
+)
 
 rem x86 build
 rem Always ignore output of first vcvarsall.bat /clean_env, because it errors if the environment is already clean. *sigh*
 call "!VS!\VC\Auxiliary\Build\vcvarsall.bat" /clean_env >nul 2>nul
-call "!VS!\VC\Auxiliary\Build\vcvarsall.bat" x64_x86 %WINSDK_VER% || exit /b 1
+call "!VS!\VC\Auxiliary\Build\vcvarsall.bat" %CFGID_X86% %WINSDK_VER% || exit /b 1
 set PATH=%CD%\winflexbison;%PATH%
 
 meson setup ^
@@ -239,7 +248,7 @@ cmake --install vkloader.build.x86
 rem arm64 build
 
 call "!VS!\VC\Auxiliary\Build\vcvarsall.bat" /clean_env || exit /b 1
-call "!VS!\VC\Auxiliary\Build\vcvarsall.bat" x64_arm64 %WINSDK_VER% || exit /b 1
+call "!VS!\VC\Auxiliary\Build\vcvarsall.bat" %CFGID_ARM64% %WINSDK_VER% || exit /b 1
 set PATH=%CD%\winflexbison;%PATH%
 
 meson setup ^
@@ -304,7 +313,7 @@ cmake --install vkloader.build.arm64
 rem x64 build
 
 call "!VS!\VC\Auxiliary\Build\vcvarsall.bat" /clean_env || exit /b 1
-call "!VS!\VC\Auxiliary\Build\vcvarsall.bat" x64 %WINSDK_VER% || exit /b 1
+call "!VS!\VC\Auxiliary\Build\vcvarsall.bat" %CFGID_X64% %WINSDK_VER% || exit /b 1
 set PATH=%CD%\winflexbison;%PATH%
 
 meson setup ^
