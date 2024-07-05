@@ -234,6 +234,7 @@ meson setup ^
   -Dgles2=enabled ^
   -Degl=enabled || exit /b 1
 ninja -C mesa.build.gl.x86 install || exit /b 1
+copy "C:\Program Files (x86)\Windows Kits\10\bin\%WINSDK_VER%\x86\dxil.dll" "%CD%\mesa.prefix.gl\x86\bin\"
 
 cmake -G Ninja ^
   -S vkloader.src ^
@@ -299,6 +300,7 @@ meson setup ^
   -Dgles2=enabled ^
   -Degl=enabled || exit /b 1
 ninja -C mesa.build.gl.arm64 install || exit /b 1
+copy "C:\Program Files (x86)\Windows Kits\10\bin\%WINSDK_VER%\arm64\dxil.dll" "%CD%\mesa.prefix.gl\arm64\bin\"
 
 cmake -G Ninja ^
   -S vkloader.src ^
@@ -364,6 +366,7 @@ meson setup ^
   -Dgles2=enabled ^
   -Degl=enabled || exit /b 1
 ninja -C mesa.build.gl.x64 install || exit /b 1
+copy "C:\Program Files (x86)\Windows Kits\10\bin\%WINSDK_VER%\x64\dxil.dll" "%CD%\mesa.prefix.gl\x64\bin\"
 
 cmake -G Ninja ^
   -S vkloader.src ^
