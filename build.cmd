@@ -377,12 +377,11 @@ cmake -G Ninja ^
 cmake --build vkloader.build.x64
 cmake --install vkloader.build.x64
 
+python patch-icds.py || exit /b 1
 
 rem build installer
 if "x%ENABLE_INSTALLER%"=="x1" (
-
 	python gen-version.py || exit /b 1
-	python patch-icds.py || exit /b 1
 
 	"C:\Program Files (x86)\Windows Kits\10\bin\10.0.22621.0\x64\signtool.exe" sign /a /n "Uplink Laboratories" /fd SHA256 /td SHA256 /tr http://timestamp.digicert.com ^
 	  mesa.prefix.vk\x86\bin\*.dll mesa.prefix.vk\x86\bin\*.exe vkloader.prefix\x86\bin\*.dll ^
