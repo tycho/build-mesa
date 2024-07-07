@@ -135,6 +135,7 @@ if "x%ENABLE_CLEAN%" NEQ "x0" (
   git checkout -t origin/%VKLOADER_BRANCH% || git checkout %VKLOADER_BRANCH%
   git pull
   git apply --verbose ..\patches\vkloader-install-pdb.patch || exit /b 1
+  git apply --verbose ..\patches\vkloader-no-d3dmappinglayers.patch || exit /b 1
 )
 cd ..
 

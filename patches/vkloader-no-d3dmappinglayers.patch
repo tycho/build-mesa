@@ -1,0 +1,22 @@
+diff --git a/loader/loader.c b/loader/loader.c
+index b9f7195de..6b77c6196 100644
+--- a/loader/loader.c
++++ b/loader/loader.c
+@@ -3141,7 +3141,7 @@ VkResult read_data_files_in_search_paths(const struct loader_instance *inst, enu
+ #if COMMON_UNIX_PLATFORMS
+             relative_location = VK_DRIVERS_INFO_RELATIVE_DIR;
+ #endif
+-#if defined(_WIN32)
++#if defined(_WIN32) && 0
+             package_path = windows_get_app_package_manifest_path(inst);
+ #endif
+             break;
+@@ -3149,7 +3149,7 @@ VkResult read_data_files_in_search_paths(const struct loader_instance *inst, enu
+ #if COMMON_UNIX_PLATFORMS
+             relative_location = VK_ILAYERS_INFO_RELATIVE_DIR;
+ #endif
+-#if defined(_WIN32)
++#if defined(_WIN32) && 0
+             package_path = windows_get_app_package_manifest_path(inst);
+ #endif
+             break;
