@@ -1,0 +1,13 @@
+diff --git a/src/gallium/drivers/zink/zink_context.c b/src/gallium/drivers/zink/zink_context.c
+index 2b9f5b37a57..d3963f76393 100644
+--- a/src/gallium/drivers/zink/zink_context.c
++++ b/src/gallium/drivers/zink/zink_context.c
+@@ -674,7 +674,7 @@ get_bufferview_for_binding(struct zink_context *ctx, gl_shader_stage stage, enum
+ ALWAYS_INLINE static struct zink_resource *
+ update_descriptor_state_ubo_db(struct zink_context *ctx, gl_shader_stage shader, unsigned slot, struct zink_resource *res)
+ {
+-   struct zink_screen *screen = zink_screen(ctx->base.screen);
++   UNUSED struct zink_screen *screen = zink_screen(ctx->base.screen);
+    ctx->di.descriptor_res[ZINK_DESCRIPTOR_TYPE_UBO][shader][slot] = res;
+    if (res) {
+       ctx->di.db.ubos[shader][slot].address = res->obj->bda + ctx->ubos[shader][slot].buffer_offset;

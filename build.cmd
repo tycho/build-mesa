@@ -1,8 +1,8 @@
 @echo off
 setlocal enabledelayedexpansion
 
-set MESA_BRANCH=24.1
-set VKLOADER_BRANCH=vulkan-sdk-1.3.283
+set MESA_BRANCH=24.2
+set VKLOADER_BRANCH=vulkan-sdk-1.3.296
 set WINSDK_VER=10.0.22621.0
 set ENABLE_DBGSYM=0
 set ENABLE_INSTALLER=1
@@ -40,6 +40,14 @@ python -c "import mako" 2>nul || (
   pip install mako packaging
   python -c "import mako" 2>nul || (
     echo ERROR: "mako" module not found for python
+    exit /b 1
+  )
+)
+
+python -c "import yaml" 2>nul || (
+  pip install pyyaml
+  python -c "import yaml" 2>nul || (
+    echo ERROR: "yaml" module not found for python
     exit /b 1
   )
 )
@@ -113,7 +121,8 @@ if "x%ENABLE_CLEAN%" NEQ "x0" (
   git checkout .
   git checkout -t origin/%MESA_BRANCH% || git checkout %MESA_BRANCH%
   git pull
-  git apply --verbose ..\patches\mesa-unused-local-var.patch || exit /b 1
+  rem git apply --verbose ..\patches\mesa-unused-variables.patch || exit /b 1
+  git apply --verbose ..\patches\mesa-dozen-minImageTransferGranularity.patch || exit /b 1
 )
 cd ..
 
