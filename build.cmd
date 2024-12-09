@@ -1,9 +1,9 @@
 @echo off
 setlocal enabledelayedexpansion
 
-set MESA_BRANCH=24.2
+set MESA_BRANCH=24.3
 set VKLOADER_BRANCH=vulkan-sdk-1.3.296
-set WINSDK_VER=10.0.22621.0
+set WINSDK_VER=10.0.26100.0
 set ENABLE_DBGSYM=0
 set ENABLE_INSTALLER=1
 set ENABLE_CLEAN=1
@@ -121,7 +121,7 @@ if "x%ENABLE_CLEAN%" NEQ "x0" (
   git checkout .
   git checkout -t origin/%MESA_BRANCH% || git checkout %MESA_BRANCH%
   git pull
-  rem git apply --verbose ..\patches\mesa-unused-variables.patch || exit /b 1
+  git apply --verbose ..\patches\mesa-unused-variables.patch || exit /b 1
   git apply --verbose ..\patches\mesa-dozen-minImageTransferGranularity.patch || exit /b 1
 )
 cd ..
