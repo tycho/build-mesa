@@ -123,6 +123,7 @@ if "x%ENABLE_CLEAN%" NEQ "x0" (
   git pull
   git apply --verbose ..\patches\mesa-unused-variables.patch || exit /b 1
   git apply --verbose ..\patches\mesa-dozen-minImageTransferGranularity.patch || exit /b 1
+  git apply --verbose ..\patches\mesa-dozen-msaa-2x.patch || exit /b 1
 )
 cd ..
 

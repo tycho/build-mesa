@@ -1,0 +1,13 @@
+diff --git a/src/microsoft/vulkan/dzn_device.c b/src/microsoft/vulkan/dzn_device.c
+index 97fd13bed10..4706013f7c8 100644
+--- a/src/microsoft/vulkan/dzn_device.c
++++ b/src/microsoft/vulkan/dzn_device.c
+@@ -806,7 +806,7 @@ dzn_physical_device_get_properties(const struct dzn_physical_device *pdev,
+                                    struct vk_properties *properties)
+ {
+    /* minimum from the D3D and Vulkan specs */
+-   const VkSampleCountFlags supported_sample_counts = VK_SAMPLE_COUNT_1_BIT | VK_SAMPLE_COUNT_4_BIT;
++   const VkSampleCountFlags supported_sample_counts = VK_SAMPLE_COUNT_1_BIT | VK_SAMPLE_COUNT_2_BIT | VK_SAMPLE_COUNT_4_BIT;
+ 
+    VkPhysicalDeviceType devtype = VK_PHYSICAL_DEVICE_TYPE_INTEGRATED_GPU;
+    if (pdev->desc.is_warp)
