@@ -127,7 +127,7 @@ if "x%ENABLE_CLEAN%" NEQ "x0" (
   git apply --verbose ..\patches\mesa-dozen-minImageTransferGranularity.patch || exit /b 1
   git apply --verbose ..\patches\mesa-dozen-msaa-2x.patch || exit /b 1
   git apply --verbose ..\patches\mesa-dxil-signature.patch || exit /b 1
-  git apply --verbose ..\patches\mesa-debug-build.patch || exit /b 1
+  git apply --verbose ..\patches\mesa-glon12-queries-infinite-recursion-fix.patch || exit /b 1
 )
 cd ..
 

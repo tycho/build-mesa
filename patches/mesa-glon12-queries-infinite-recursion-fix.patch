@@ -1,0 +1,34 @@
+diff --git a/src/gallium/drivers/d3d12/d3d12_context.h b/src/gallium/drivers/d3d12/d3d12_context.h
+index 991fc8801e6..11fadc14a2e 100644
+--- a/src/gallium/drivers/d3d12/d3d12_context.h
++++ b/src/gallium/drivers/d3d12/d3d12_context.h
+@@ -185,6 +185,7 @@ struct d3d12_context {
+    struct blitter_context *blitter;
+    uint flags;
+    bool queries_disabled;
++   bool is_accumulating_query;
+ 
+ #ifdef __cplusplus
+    ResourceStateManager *resource_state_manager;
+diff --git a/src/gallium/drivers/d3d12/d3d12_query.cpp b/src/gallium/drivers/d3d12/d3d12_query.cpp
+index 9abf4a3b3e4..35ddf322564 100644
+--- a/src/gallium/drivers/d3d12/d3d12_query.cpp
++++ b/src/gallium/drivers/d3d12/d3d12_query.cpp
+@@ -451,7 +451,11 @@ begin_subquery(struct d3d12_context *ctx, struct d3d12_query *q_parent, unsigned
+    struct d3d12_query_impl *q = &q_parent->subqueries[sub_query];
+    if (q->curr_query == q->num_queries) {
+       /* Accumulate current results and store in first slot */
++      if (ctx->is_accumulating_query)
++         return;
++      ctx->is_accumulating_query = true;
+       accumulate_subresult_gpu(ctx, q_parent, sub_query);
++      ctx->is_accumulating_query = false;
+       q->curr_query = 1;
+    }
+ 
+@@ -735,4 +739,5 @@ d3d12_context_query_init(struct pipe_context *pctx)
+    pctx->get_query_result_resource = d3d12_get_query_result_resource;
+    pctx->set_active_query_state = d3d12_set_active_query_state;
+    pctx->render_condition = d3d12_render_condition;
++   ctx->is_accumulating_query = false;
+ }
