@@ -121,9 +121,12 @@ if "x%ENABLE_CLEAN%" NEQ "x0" (
   git checkout .
   git checkout -t origin/%MESA_BRANCH% || git checkout %MESA_BRANCH%
   git pull
+  del src\microsoft\compiler\dxil_md5.c
+  del src\microsoft\compiler\dxil_md5.h
   git apply --verbose ..\patches\mesa-unused-variables.patch || exit /b 1
   git apply --verbose ..\patches\mesa-dozen-minImageTransferGranularity.patch || exit /b 1
   git apply --verbose ..\patches\mesa-dozen-msaa-2x.patch || exit /b 1
+  git apply --verbose ..\patches\mesa-dxil-signature.patch || exit /b 1
 )
 cd ..
 
@@ -264,6 +267,7 @@ if "x%ENABLE_CLEAN%%MUST_CLEAN%" NEQ "x00" (
 )
 ninja -C mesa.build.gl.x86 install || exit /b 1
 copy "C:\Program Files (x86)\Windows Kits\10\bin\%WINSDK_VER%\x86\dxil.dll" "%CD%\mesa.prefix.gl\x86\bin\"
+copy "C:\Program Files (x86)\Windows Kits\10\bin\%WINSDK_VER%\x86\dxcompiler.dll" "%CD%\mesa.prefix.gl\x86\bin\"
 
 if not exist "vkloader.build.x86\build.ninja" (
   set MUST_CLEAN=1
@@ -351,6 +355,7 @@ if "x%ENABLE_CLEAN%%MUST_CLEAN%" NEQ "x00" (
 )
 ninja -C mesa.build.gl.arm64 install || exit /b 1
 copy "C:\Program Files (x86)\Windows Kits\10\bin\%WINSDK_VER%\arm64\dxil.dll" "%CD%\mesa.prefix.gl\arm64\bin\"
+copy "C:\Program Files (x86)\Windows Kits\10\bin\%WINSDK_VER%\arm64\dxcompiler.dll" "%CD%\mesa.prefix.gl\arm64\bin\"
 
 if not exist "vkloader.build.arm64\build.ninja" (
   set MUST_CLEAN=1
@@ -408,7 +413,7 @@ if "x%ENABLE_CLEAN%%MUST_CLEAN%" NEQ "x00" (
 ninja -C mesa.build.vk.x64 install || exit /b 1
 copy "C:\Program Files (x86)\Windows Kits\10\bin\%WINSDK_VER%\x64\dxil.dll" "%CD%\mesa.prefix.vk\x64\bin\"
 
-if not exist "mesa.build.vk.x64\build.ninja" (
+if not exist "mesa.build.gl.x64\build.ninja" (
   set MUST_CLEAN=1
 ) else (
   set MUST_CLEAN=0
@@ -438,6 +443,7 @@ if "x%ENABLE_CLEAN%%MUST_CLEAN%" NEQ "x00" (
 )
 ninja -C mesa.build.gl.x64 install || exit /b 1
 copy "C:\Program Files (x86)\Windows Kits\10\bin\%WINSDK_VER%\x64\dxil.dll" "%CD%\mesa.prefix.gl\x64\bin\"
+copy "C:\Program Files (x86)\Windows Kits\10\bin\%WINSDK_VER%\x64\dxcompiler.dll" "%CD%\mesa.prefix.gl\x64\bin\"
 
 if not exist "vkloader.build.x64\build.ninja" (
   set MUST_CLEAN=1
@@ -461,7 +467,7 @@ rem build installer
 if "x%ENABLE_INSTALLER%"=="x1" (
   python gen-version.py || exit /b 1
 
-  "C:\Program Files (x86)\Windows Kits\10\bin\10.0.22621.0\x64\signtool.exe" sign /a /n "Uplink Laboratories" /fd SHA256 /td SHA256 /tr http://timestamp.digicert.com ^
+  "C:\Program Files (x86)\Windows Kits\10\bin\%WINSDK_VER%\x64\signtool.exe" sign /a /n "Uplink Laboratories" /fd SHA256 /td SHA256 /tr http://timestamp.digicert.com ^
     mesa.prefix.vk\x86\bin\*.dll mesa.prefix.vk\x86\bin\*.exe vkloader.prefix\x86\bin\*.dll ^
     mesa.prefix.vk\x64\bin\*.dll mesa.prefix.vk\x64\bin\*.exe vkloader.prefix\x64\bin\*.dll ^
     mesa.prefix.vk\arm64\bin\*.dll mesa.prefix.vk\arm64\bin\*.exe vkloader.prefix\arm64\bin\*.dll ^
@@ -471,6 +477,6 @@ if "x%ENABLE_INSTALLER%"=="x1" (
 
   start /wait cmd /c "C:\Program Files (x86)\Inno Setup 6\Compil32.exe" /cc install-mesa-dozen.iss || exit /b 1
   start /wait cmd /c "C:\Program Files (x86)\Inno Setup 6\Compil32.exe" /cc install-mesa-gl.iss || exit /b 1
-  "C:\Program Files (x86)\Windows Kits\10\bin\10.0.22621.0\x64\signtool.exe" sign /a /n "Uplink Laboratories" /fd SHA256 /td SHA256 /tr http://timestamp.digicert.com ^
+  "C:\Program Files (x86)\Windows Kits\10\bin\%WINSDK_VER%\x64\signtool.exe" sign /a /n "Uplink Laboratories" /fd SHA256 /td SHA256 /tr http://timestamp.digicert.com ^
     Output\*.exe || exit /b 1
 )
