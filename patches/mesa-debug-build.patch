@@ -1,0 +1,13 @@
+diff --git a/src/gallium/drivers/d3d12/d3d12_resource.cpp b/src/gallium/drivers/d3d12/d3d12_resource.cpp
+index 3e4f2440b0a..ee27a4184ab 100644
+--- a/src/gallium/drivers/d3d12/d3d12_resource.cpp
++++ b/src/gallium/drivers/d3d12/d3d12_resource.cpp
+@@ -454,7 +454,7 @@ convert_planar_resource(struct d3d12_resource *res)
+       D3D12_RESOURCE_DESC desc = GetDesc(res->bo->res);
+       desc.Flags &= ~D3D12_RESOURCE_FLAG_ALLOW_UNORDERED_ACCESS;
+       D3D12_PLACED_SUBRESOURCE_FOOTPRINT placed_footprint = {};
+-      D3D12_SUBRESOURCE_FOOTPRINT *footprint = &placed_footprint.Footprint;
++      //D3D12_SUBRESOURCE_FOOTPRINT *footprint = &placed_footprint.Footprint;
+       unsigned subresource = plane * desc.MipLevels * desc.DepthOrArraySize;
+       screen->dev->GetCopyableFootprints(&desc, subresource, 1, 0, &placed_footprint, nullptr, nullptr, nullptr);
+       assert(plane_res->base.b.width0 == footprint->Width);
