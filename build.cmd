@@ -1,8 +1,8 @@
 @echo off
 setlocal enabledelayedexpansion
 
-set MESA_BRANCH=25.0
-set VKLOADER_BRANCH=vulkan-sdk-1.4.309
+set MESA_BRANCH=main
+set VKLOADER_BRANCH=main
 set WINSDK_VER=10.0.26100.0
 set ENABLE_DBGSYM=0
 set ENABLE_INSTALLER=1
@@ -128,6 +128,7 @@ if "x%ENABLE_CLEAN%" NEQ "x0" (
   git apply --verbose ..\patches\mesa-dozen-msaa-2x.patch || exit /b 1
   git apply --verbose ..\patches\mesa-dxil-signature.patch || exit /b 1
   git apply --verbose ..\patches\mesa-glon12-queries-infinite-recursion-fix.patch || exit /b 1
+  git apply --verbose ..\patches\mesa-nir-alloca-msvc.patch || exit /b 1
 )
 cd ..
 
@@ -224,7 +225,6 @@ if "x%ENABLE_CLEAN%%MUST_CLEAN%" NEQ "x00" (
     -Db_vscrt=%MESON_VSRUNTIME% ^
     -Dllvm=disabled ^
     -Dplatforms=windows ^
-    -Dosmesa=false ^
     -Dspirv-to-dxil=false ^
     -Dshared-glapi=enabled ^
     -Dgallium-drivers="" ^
@@ -257,7 +257,6 @@ if "x%ENABLE_CLEAN%%MUST_CLEAN%" NEQ "x00" (
     -Db_vscrt=%MESON_VSRUNTIME% ^
     -Dllvm=disabled ^
     -Dplatforms=windows ^
-    -Dosmesa=false ^
     -Dgallium-drivers=d3d12,zink ^
     -Dspirv-to-dxil=false ^
     -Dshared-glapi=enabled ^
@@ -312,7 +311,6 @@ if "x%ENABLE_CLEAN%%MUST_CLEAN%" NEQ "x00" (
     -Db_vscrt=%MESON_VSRUNTIME% ^
     -Dllvm=disabled ^
     -Dplatforms=windows ^
-    -Dosmesa=false ^
     -Dspirv-to-dxil=false ^
     -Dshared-glapi=enabled ^
     -Dgallium-drivers="" ^
@@ -345,7 +343,6 @@ if "x%ENABLE_CLEAN%%MUST_CLEAN%" NEQ "x00" (
     -Db_vscrt=%MESON_VSRUNTIME% ^
     -Dllvm=disabled ^
     -Dplatforms=windows ^
-    -Dosmesa=false ^
     -Dgallium-drivers=d3d12,zink ^
     -Dspirv-to-dxil=false ^
     -Dshared-glapi=enabled ^
@@ -400,7 +397,6 @@ if "x%ENABLE_CLEAN%%MUST_CLEAN%" NEQ "x00" (
     -Db_vscrt=%MESON_VSRUNTIME% ^
     -Dllvm=disabled ^
     -Dplatforms=windows ^
-    -Dosmesa=false ^
     -Dspirv-to-dxil=false ^
     -Dshared-glapi=enabled ^
     -Dgallium-drivers="" ^
@@ -433,7 +429,6 @@ if "x%ENABLE_CLEAN%%MUST_CLEAN%" NEQ "x00" (
     -Db_vscrt=%MESON_VSRUNTIME% ^
     -Dllvm=disabled ^
     -Dplatforms=windows ^
-    -Dosmesa=false ^
     -Dgallium-drivers=d3d12,zink ^
     -Dspirv-to-dxil=false ^
     -Dshared-glapi=enabled ^
