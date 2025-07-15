@@ -1,0 +1,15 @@
+diff --git a/src/vulkan/wsi/wsi_common.c b/src/vulkan/wsi/wsi_common.c
+index f78e4baa22a..e18ce7ae18c 100644
+--- a/src/vulkan/wsi/wsi_common.c
++++ b/src/vulkan/wsi/wsi_common.c
+@@ -596,7 +596,10 @@ wsi_configure_image(const struct wsi_swapchain *chain,
+                     VkExternalMemoryHandleTypeFlags handle_types,
+                     struct wsi_image_info *info)
+ {
++   const enum wsi_image_type image_type_saved = info->image_type;
+    memset(info, 0, sizeof(*info));
++   info->image_type = image_type_saved;
++
+    uint32_t queue_family_count = 1;
+ 
+    if (pCreateInfo->imageSharingMode == VK_SHARING_MODE_CONCURRENT)
