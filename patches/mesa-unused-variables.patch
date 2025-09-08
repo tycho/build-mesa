@@ -1,8 +1,8 @@
 diff --git a/src/gallium/drivers/d3d12/d3d12_resource.cpp b/src/gallium/drivers/d3d12/d3d12_resource.cpp
-index eda22c25346..28bcf481139 100644
+index 2d72f65558f..8f0d89a0a5c 100644
 --- a/src/gallium/drivers/d3d12/d3d12_resource.cpp
 +++ b/src/gallium/drivers/d3d12/d3d12_resource.cpp
-@@ -456,7 +456,7 @@ convert_planar_resource(struct d3d12_resource *res)
+@@ -454,7 +454,7 @@ convert_planar_resource(struct d3d12_resource *res)
        D3D12_RESOURCE_DESC desc = GetDesc(res->bo->res);
        desc.Flags &= ~D3D12_RESOURCE_FLAG_ALLOW_UNORDERED_ACCESS;
        D3D12_PLACED_SUBRESOURCE_FOOTPRINT placed_footprint = {};
@@ -12,12 +12,12 @@ index eda22c25346..28bcf481139 100644
        screen->dev->GetCopyableFootprints(&desc, subresource, 1, 0, &placed_footprint, nullptr, nullptr, nullptr);
        assert(plane_res->base.b.width0 == footprint->Width);
 diff --git a/src/gallium/drivers/zink/zink_context.c b/src/gallium/drivers/zink/zink_context.c
-index 38d843e127d..9b14df2e5c2 100644
+index 9eea8c2482a..f5523b45e9c 100644
 --- a/src/gallium/drivers/zink/zink_context.c
 +++ b/src/gallium/drivers/zink/zink_context.c
-@@ -672,7 +672,7 @@ get_bufferview_for_binding(struct zink_context *ctx, mesa_shader_stage stage, en
+@@ -672,7 +672,7 @@ get_bufferview_for_binding(struct zink_context *ctx, gl_shader_stage stage, enum
  ALWAYS_INLINE static struct zink_resource *
- update_descriptor_state_ubo_db(struct zink_context *ctx, mesa_shader_stage shader, unsigned slot, struct zink_resource *res)
+ update_descriptor_state_ubo_db(struct zink_context *ctx, gl_shader_stage shader, unsigned slot, struct zink_resource *res)
  {
 -   struct zink_screen *screen = zink_screen(ctx->base.screen);
 +   UNUSED struct zink_screen *screen = zink_screen(ctx->base.screen);
