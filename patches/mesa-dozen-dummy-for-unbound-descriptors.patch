@@ -1,0 +1,197 @@
+diff --git a/src/microsoft/vulkan/dzn_cmd_buffer.c b/src/microsoft/vulkan/dzn_cmd_buffer.c
+index 2a895b73891..262ee44d9d5 100644
+--- a/src/microsoft/vulkan/dzn_cmd_buffer.c
++++ b/src/microsoft/vulkan/dzn_cmd_buffer.c
+@@ -30,6 +30,73 @@
+ 
+ #include "dxil_spirv_nir.h"
+ 
++static void
++dzn_create_dummy_cbv_srv_descriptors(struct dzn_device *device,
++                                    struct dzn_descriptor_heap *heap,
++                                    uint32_t dst_offset,
++                                    uint32_t cbv_count,
++                                    uint32_t srv_count)
++{
++    assert(heap->desc_sz == device->device_heaps[D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV].desc_sz);
++
++    // Create dummy CBVs
++    for (uint32_t i = 0; i < cbv_count; i++) {
++        D3D12_CPU_DESCRIPTOR_HANDLE handle =
++            dzn_descriptor_heap_get_cpu_handle(heap, dst_offset + i);
++
++        D3D12_CONSTANT_BUFFER_VIEW_DESC cbv_desc = {
++            .BufferLocation = ID3D12Resource_GetGPUVirtualAddress(device->dummy_res.dummy_buffer),
++            .SizeInBytes = 256
++        };
++
++        ID3D12Device1_CreateConstantBufferView(device->dev, &cbv_desc, handle);
++    }
++
++    // Create dummy SRVs
++    for (uint32_t i = 0; i < srv_count; i++) {
++        D3D12_CPU_DESCRIPTOR_HANDLE handle =
++            dzn_descriptor_heap_get_cpu_handle(heap, dst_offset + cbv_count + i);
++
++        D3D12_SHADER_RESOURCE_VIEW_DESC srv_desc = {
++            .Format = DXGI_FORMAT_R8G8B8A8_UNORM,
++            .ViewDimension = D3D12_SRV_DIMENSION_TEXTURE2D,
++            .Shader4ComponentMapping = D3D12_DEFAULT_SHADER_4_COMPONENT_MAPPING,
++            .Texture2D = { .MostDetailedMip = 0, .MipLevels = 1 }
++        };
++
++        ID3D12Device1_CreateShaderResourceView(device->dev,
++            device->dummy_res.dummy_texture, &srv_desc, handle);
++    }
++}
++
++static void
++dzn_create_dummy_sampler_descriptors(struct dzn_device *device,
++                                    struct dzn_descriptor_heap *heap,
++                                    uint32_t dst_offset,
++                                    uint32_t sampler_count)
++{
++    assert(heap->desc_sz == device->device_heaps[D3D12_DESCRIPTOR_HEAP_TYPE_SAMPLER].desc_sz);
++
++    for (uint32_t i = 0; i < sampler_count; i++) {
++        D3D12_CPU_DESCRIPTOR_HANDLE handle =
++            dzn_descriptor_heap_get_cpu_handle(heap, dst_offset + i);
++
++        D3D12_SAMPLER_DESC sampler_desc = {
++            .Filter = D3D12_FILTER_MIN_MAG_MIP_LINEAR,
++            .AddressU = D3D12_TEXTURE_ADDRESS_MODE_CLAMP,
++            .AddressV = D3D12_TEXTURE_ADDRESS_MODE_CLAMP,
++            .AddressW = D3D12_TEXTURE_ADDRESS_MODE_CLAMP,
++            .MipLODBias = 0,
++            .MaxAnisotropy = 1,
++            .ComparisonFunc = D3D12_COMPARISON_FUNC_NEVER,
++            .MinLOD = 0,
++            .MaxLOD = D3D12_FLOAT32_MAX
++        };
++
++        ID3D12Device1_CreateSampler(device->dev, &sampler_desc, handle);
++    }
++}
++
+ static void
+ dzn_cmd_buffer_exec_transition_barriers(struct dzn_cmd_buffer *cmdbuf,
+                                         D3D12_RESOURCE_BARRIER *barriers,
+@@ -3291,7 +3358,26 @@ dzn_cmd_buffer_update_heaps(struct dzn_cmd_buffer *cmdbuf, uint32_t bindpoint)
+ 
+          for (uint32_t s = 0; s < MAX_SETS; s++) {
+             const struct dzn_descriptor_set *set = desc_state->sets[s].set;
+-            if (!set) continue;
++            if (!set) {
++               uint32_t expected_cbv_count = pipeline->sets[s].range_desc_count[D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV];
++               uint32_t expected_sampler_count = pipeline->sets[s].range_desc_count[D3D12_DESCRIPTOR_HEAP_TYPE_SAMPLER];
++
++               // Add dynamic buffer count to CBV count
++               if (!device->bindless && type == D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV) {
++                  expected_cbv_count += pipeline->sets[s].dynamic_buffer_count;
++               }
++
++               if (expected_cbv_count > 0 && type == D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV) {
++                  dzn_create_dummy_cbv_srv_descriptors(device, dst_heap,
++                     dst_heap_offset + pipeline->sets[s].heap_offsets[type], expected_cbv_count, 0);
++               }
++
++               if (expected_sampler_count > 0 && type == D3D12_DESCRIPTOR_HEAP_TYPE_SAMPLER) {
++                  dzn_create_dummy_sampler_descriptors(device, dst_heap,
++                     dst_heap_offset + pipeline->sets[s].heap_offsets[type], expected_sampler_count);
++               }
++               continue;
++            }
+ 
+             uint32_t set_heap_offset = pipeline->sets[s].heap_offsets[type];
+             uint32_t set_desc_count = MIN2(pipeline->sets[s].range_desc_count[type], set->heap_sizes[type]);
+diff --git a/src/microsoft/vulkan/dzn_device.c b/src/microsoft/vulkan/dzn_device.c
+index 51643bf19eb..f55758788d6 100644
+--- a/src/microsoft/vulkan/dzn_device.c
++++ b/src/microsoft/vulkan/dzn_device.c
+@@ -2184,6 +2184,12 @@ dzn_device_destroy(struct dzn_device *device, const VkAllocationCallbacks *pAllo
+       mtx_destroy(&device->device_heaps[type].lock);
+    }
+ 
++   if (device->dummy_res.dummy_buffer)
++      ID3D12Resource_Release(device->dummy_res.dummy_buffer);
++
++   if (device->dummy_res.dummy_texture)
++      ID3D12Resource_Release(device->dummy_res.dummy_texture);
++
+    if (device->dev_config)
+       ID3D12DeviceConfiguration_Release(device->dev_config);
+ 
+@@ -2409,6 +2415,57 @@ dzn_device_create(struct dzn_physical_device *pdev,
+       }
+    }
+ 
++   D3D12_RESOURCE_DESC buffer_desc = {
++      .Dimension = D3D12_RESOURCE_DIMENSION_BUFFER,
++      .Alignment = 0,
++      .Width = 256,
++      .Height = 1,
++      .DepthOrArraySize = 1,
++      .MipLevels = 1,
++      .Format = DXGI_FORMAT_UNKNOWN,
++      .SampleDesc = { .Count = 1, .Quality = 0 },
++      .Layout = D3D12_TEXTURE_LAYOUT_ROW_MAJOR,
++      .Flags = D3D12_RESOURCE_FLAG_NONE
++   };
++
++   D3D12_HEAP_PROPERTIES heap_props = {
++      .Type = D3D12_HEAP_TYPE_DEFAULT
++   };
++
++   HRESULT hr = ID3D12Device1_CreateCommittedResource(
++      device->dev, &heap_props, D3D12_HEAP_FLAG_NONE,
++      &buffer_desc, D3D12_RESOURCE_STATE_GENERIC_READ, NULL,
++      &IID_ID3D12Resource, (void**)&device->dummy_res.dummy_buffer);
++
++   if (FAILED(hr)) {
++      dzn_device_destroy(device, pAllocator);
++      return vk_error(pdev, VK_ERROR_OUT_OF_DEVICE_MEMORY);
++   }
++
++   // Create dummy 1x1 texture for SRVs
++   D3D12_RESOURCE_DESC tex_desc = {
++      .Dimension = D3D12_RESOURCE_DIMENSION_TEXTURE2D,
++      .Alignment = 0,
++      .Width = 1,
++      .Height = 1,
++      .DepthOrArraySize = 1,
++      .MipLevels = 1,
++      .Format = DXGI_FORMAT_R8G8B8A8_UNORM,
++      .SampleDesc = { .Count = 1, .Quality = 0 },
++      .Layout = D3D12_TEXTURE_LAYOUT_UNKNOWN,
++      .Flags = D3D12_RESOURCE_FLAG_NONE
++   };
++
++   hr = ID3D12Device1_CreateCommittedResource(
++      device->dev, &heap_props, D3D12_HEAP_FLAG_NONE,
++      &tex_desc, D3D12_RESOURCE_STATE_GENERIC_READ, NULL,
++      &IID_ID3D12Resource, (void**)&device->dummy_res.dummy_texture);
++
++   if (FAILED(hr)) {
++      dzn_device_destroy(device, pAllocator);
++      return vk_error(pdev, VK_ERROR_OUT_OF_DEVICE_MEMORY);
++   }
++
+    assert(queue_count == qindex);
+    *out = dzn_device_to_handle(device);
+    return VK_SUCCESS;
+diff --git a/src/microsoft/vulkan/dzn_private.h b/src/microsoft/vulkan/dzn_private.h
+index 27d7a3ab9f8..810ea638e09 100644
+--- a/src/microsoft/vulkan/dzn_private.h
++++ b/src/microsoft/vulkan/dzn_private.h
+@@ -302,6 +302,11 @@ struct dzn_device {
+       ID3D12Resource *refs;
+    } queries;
+ 
++   struct {
++      ID3D12Resource *dummy_buffer;
++      ID3D12Resource *dummy_texture;
++   } dummy_res;
++
+    /* Will be the app's graphics queue if there's exactly one, otherwise this will be 
+     * a dedicated graphics queue to host swapchain blits.
+     */
