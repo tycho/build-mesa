@@ -1,0 +1,132 @@
+diff --git a/src/gallium/winsys/d3d12/wgl/d3d12_wgl_winsys.c b/src/gallium/winsys/d3d12/wgl/d3d12_wgl_winsys.c
+index 6c1a0b4ea57..2fc9f57ba65 100644
+--- a/src/gallium/winsys/d3d12/wgl/d3d12_wgl_winsys.c
++++ b/src/gallium/winsys/d3d12/wgl/d3d12_wgl_winsys.c
+@@ -30,6 +30,117 @@
+ #include "pipe/p_screen.h"
+ #include "util/u_memory.h"
+ 
++#include <dxgi.h>
++
++// Define the GUID ourselves to avoid needing dxguid.lib
++static const GUID IID_IDXGIFactory = {0x7b7166ec, 0x21c7, 0x44ae, {0xb2, 0x1a, 0xc9, 0xae, 0x32, 0x1a, 0xe3, 0x69}};
++
++// Function pointer type for CreateDXGIFactory
++typedef HRESULT (WINAPI *PFN_CreateDXGIFactory)(REFIID riid, void **ppFactory);
++
++// Case-insensitive wide string search
++static WCHAR *
++wcsstr_i(const WCHAR* haystack, const WCHAR* needle)
++{
++   if (!needle || !*needle) {
++      return (WCHAR*)haystack;
++   }
++
++   size_t needle_len = wcslen(needle);
++   for (const WCHAR* p = haystack; *p; p++) {
++      if (_wcsnicmp(p, needle, needle_len) == 0) {
++         return (WCHAR*)p;
++      }
++   }
++
++   return NULL;
++}
++
++static bool
++find_adapter_by_env_config(LUID* adapter)
++{
++   if (!adapter) {
++      return false;
++   }
++
++   // Get environment variable
++   char* env_name = getenv("MESA_D3D12_DEFAULT_ADAPTER_NAME");
++   if (!env_name || !*env_name) {
++      return false;
++   }
++
++   // Convert to wide string
++   int wide_len = MultiByteToWideChar(CP_UTF8, 0, env_name, -1, NULL, 0);
++   if (wide_len <= 0) {
++      return false;
++   }
++
++   WCHAR* wide_name = (WCHAR*)malloc(wide_len * sizeof(WCHAR));
++   if (!wide_name) {
++      return false;
++   }
++
++   if (MultiByteToWideChar(CP_UTF8, 0, env_name, -1, wide_name, wide_len) <= 0) {
++      free(wide_name);
++      return false;
++   }
++
++   // Load DXGI library dynamically
++   HMODULE dxgi_dll = LoadLibraryW(L"dxgi.dll");
++   if (!dxgi_dll) {
++      free(wide_name);
++      return false;
++   }
++
++   PFN_CreateDXGIFactory pfnCreateDXGIFactory = (PFN_CreateDXGIFactory)GetProcAddress(dxgi_dll, "CreateDXGIFactory");
++   if (!pfnCreateDXGIFactory) {
++      FreeLibrary(dxgi_dll);
++      free(wide_name);
++      return false;
++   }
++
++   // Create DXGI factory
++   IDXGIFactory* factory = NULL;
++   HRESULT hr = pfnCreateDXGIFactory(&IID_IDXGIFactory, (void**)&factory);
++   if (FAILED(hr)) {
++      FreeLibrary(dxgi_dll);
++      free(wide_name);
++      return false;
++   }
++
++   bool found = false;
++   UINT adapter_index = 0;
++   IDXGIAdapter* dxgi_adapter = NULL;
++
++   // Enumerate adapters
++   while (SUCCEEDED(factory->lpVtbl->EnumAdapters(factory, adapter_index, &dxgi_adapter))) {
++      DXGI_ADAPTER_DESC desc;
++      hr = dxgi_adapter->lpVtbl->GetDesc(dxgi_adapter, &desc);
++
++      if (SUCCEEDED(hr)) {
++         // Check if adapter name contains the substring
++         if (wcsstr_i(desc.Description, wide_name)) {
++            *adapter = desc.AdapterLuid;
++            found = true;
++         }
++      }
++
++      dxgi_adapter->lpVtbl->Release(dxgi_adapter);
++      dxgi_adapter = NULL;
++
++      if (found) {
++         break;
++      }
++      adapter_index++;
++   }
++
++   factory->lpVtbl->Release(factory);
++   FreeLibrary(dxgi_dll);
++   free(wide_name);
++
++   return found;
++}
++
+ struct pipe_screen *
+ d3d12_wgl_create_screen(struct sw_winsys *winsys, HDC hDC)
+ {
+@@ -38,6 +149,9 @@ d3d12_wgl_create_screen(struct sw_winsys *winsys, HDC hDC)
+       stw_dev->callbacks.pfnGetAdapterLuid(hDC, &local_luid);
+       adapter_luid = &local_luid;
+    }
++   if (!adapter_luid && find_adapter_by_env_config(&local_luid)) {
++      adapter_luid = &local_luid;
++   }
+    return d3d12_create_dxgi_screen(winsys, adapter_luid);
+ }
+ 
