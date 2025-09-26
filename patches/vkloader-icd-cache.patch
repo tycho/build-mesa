@@ -1,0 +1,60 @@
+From 36b2673e5c7138395777f556c5abb82fd03e5aff Mon Sep 17 00:00:00 2001
+From: Steven Noonan <steven@uplinklabs.net>
+Date: Sun, 21 Sep 2025 21:02:55 -0700
+Subject: [PATCH 2/2] use ICD cache instead of rescanning ICDs
+
+Signed-off-by: Steven Noonan <steven@uplinklabs.net>
+---
+ loader/loader.c | 12 +-----------
+ 1 file changed, 1 insertion(+), 11 deletions(-)
+
+diff --git a/loader/loader.c b/loader/loader.c
+index 879e177dd..b7f565715 100644
+--- a/loader/loader.c
++++ b/loader/loader.c
+@@ -7469,14 +7469,12 @@ VKAPI_ATTR VkResult VKAPI_CALL terminator_EnumerateInstanceExtensionProperties(c
+     struct loader_extension_list *global_ext_list = NULL;
+     struct loader_layer_list instance_layers;
+     struct loader_extension_list local_ext_list;
+-    struct loader_icd_tramp_list icd_tramp_list;
+     uint32_t copy_size;
+     VkResult res = VK_SUCCESS;
+     struct loader_envvar_all_filters layer_filters = {0};
+ 
+     memset(&local_ext_list, 0, sizeof(local_ext_list));
+     memset(&instance_layers, 0, sizeof(instance_layers));
+-    memset(&icd_tramp_list, 0, sizeof(icd_tramp_list));
+ 
+     res = parse_layer_environment_var_filters(NULL, &layer_filters);
+     if (VK_SUCCESS != res) {
+@@ -7506,18 +7504,11 @@ VKAPI_ATTR VkResult VKAPI_CALL terminator_EnumerateInstanceExtensionProperties(c
+         // Preload ICD libraries so subsequent calls to EnumerateInstanceExtensionProperties don't have to load them
+         loader_preload_icds();
+ 
+-        // Scan/discover all ICD libraries
+-        res = loader_icd_scan(NULL, &icd_tramp_list, NULL, NULL);
+-        // EnumerateInstanceExtensionProperties can't return anything other than OOM or VK_ERROR_LAYER_NOT_PRESENT
+-        if ((VK_SUCCESS != res && icd_tramp_list.count > 0) || res == VK_ERROR_OUT_OF_HOST_MEMORY) {
+-            goto out;
+-        }
+         // Get extensions from all ICD's, merge so no duplicates
+-        res = loader_get_icd_loader_instance_extensions(NULL, &icd_tramp_list, &local_ext_list);
++        res = loader_get_icd_loader_instance_extensions(NULL, &preloaded_icds, &local_ext_list);
+         if (VK_SUCCESS != res) {
+             goto out;
+         }
+-        loader_clear_scanned_icd_list(NULL, &icd_tramp_list);
+ 
+         // Append enabled implicit layers.
+         res = loader_scan_for_implicit_layers(NULL, &instance_layers, &layer_filters);
+@@ -7554,7 +7545,6 @@ VKAPI_ATTR VkResult VKAPI_CALL terminator_EnumerateInstanceExtensionProperties(c
+     }
+ 
+ out:
+-    loader_destroy_generic_list(NULL, (struct loader_generic_list *)&icd_tramp_list);
+     loader_destroy_generic_list(NULL, (struct loader_generic_list *)&local_ext_list);
+     loader_delete_layer_list_and_properties(NULL, &instance_layers);
+     return res;
+-- 
+2.51.0
+

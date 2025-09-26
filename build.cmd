@@ -2,7 +2,7 @@
 setlocal enabledelayedexpansion
 
 set MESA_BRANCH=main
-set VKLOADER_BRANCH=main
+set VKLOADER_BRANCH=v1.4.327
 set WINSDK_VER=10.0.26100.0
 set ENABLE_DBGSYM=0
 set ENABLE_INSTALLER=1
@@ -151,8 +151,13 @@ if "x%ENABLE_CLEAN%" NEQ "x0" (
   git checkout .
   git checkout -t origin/%VKLOADER_BRANCH% || git checkout %VKLOADER_BRANCH%
   git pull
+  del /q loader\generated\vk_command_name_hashes.h
+  del /q loader\xxhash.h
+  del /q scripts\generators\command_name_hash_generator.py
   git apply --verbose ..\patches\vkloader-install-pdb.patch || exit /b 1
   git apply --verbose ..\patches\vkloader-no-d3dmappinglayers.patch || exit /b 1
+  git apply --verbose ..\patches\vkloader-xxhash-fn-lookup.patch || exit /b 1
+  git apply --verbose ..\patches\vkloader-icd-cache.patch || exit /b 1
 )
 cd ..
 
