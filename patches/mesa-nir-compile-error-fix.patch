@@ -1,0 +1,17 @@
+diff --git a/src/compiler/nir/nir.h b/src/compiler/nir/nir.h
+index b4f3e998d9a..93ce40915ad 100644
+--- a/src/compiler/nir/nir.h
++++ b/src/compiler/nir/nir.h
+@@ -4779,7 +4779,12 @@ nir_metadata_require_most(nir_shader *shader)
+ static inline struct blob
+ nir_validate_progress_setup(nir_shader *shader)
+ {
++#ifdef __cplusplus
++   struct blob tmp = {};
++   return tmp;
++#else
+    return (struct blob){0};
++#endif
+ }
+ static inline void
+ nir_validate_progress_finish(nir_shader *shader, struct blob *setup_blob, bool progress, const char *when)
