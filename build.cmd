@@ -131,7 +131,6 @@ if "x%ENABLE_CLEAN%" NEQ "x0" (
   git apply --verbose ..\patches\mesa-glon12-wgl-support-MESA_D3D12_DEFAULT_ADAPTER_NAME.patch || exit /b 1
   git apply --verbose ..\patches\mesa-dozen-assert-imagetype.patch || exit /b 1
   git apply --verbose ..\patches\mesa-dozen-dummy-for-unbound-descriptors.patch || exit /b 1
-  git apply --verbose ..\patches\mesa-nir-compile-error-fix.patch || exit /b 1
 )
 cd ..
 
