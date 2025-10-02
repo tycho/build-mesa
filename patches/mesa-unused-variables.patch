@@ -12,10 +12,10 @@ index eda22c25346..28bcf481139 100644
        screen->dev->GetCopyableFootprints(&desc, subresource, 1, 0, &placed_footprint, nullptr, nullptr, nullptr);
        assert(plane_res->base.b.width0 == footprint->Width);
 diff --git a/src/gallium/drivers/zink/zink_context.c b/src/gallium/drivers/zink/zink_context.c
-index 38d843e127d..9b14df2e5c2 100644
+index 1720a0739df..42bbf8f61f1 100644
 --- a/src/gallium/drivers/zink/zink_context.c
 +++ b/src/gallium/drivers/zink/zink_context.c
-@@ -672,7 +672,7 @@ get_bufferview_for_binding(struct zink_context *ctx, mesa_shader_stage stage, en
+@@ -688,7 +688,7 @@ get_bufferview_for_binding(struct zink_context *ctx, mesa_shader_stage stage, en
  ALWAYS_INLINE static struct zink_resource *
  update_descriptor_state_ubo_db(struct zink_context *ctx, mesa_shader_stage shader, unsigned slot, struct zink_resource *res)
  {
