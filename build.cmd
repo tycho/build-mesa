@@ -8,7 +8,7 @@ set ENABLE_DBGSYM=0
 set ENABLE_INSTALLER=1
 set ENABLE_CLEAN=1
 
-set PATH=%CD%\winflexbison;%PATH%
+set PATH=%CD%\winflexbison;C:\Program Files\Python313;C:\Program Files\Python313\Scripts;%PATH%
 set VSCMD_SKIP_SENDTELEMETRY=1
 
 rem *** check dependencies ***
@@ -37,7 +37,7 @@ where /q meson.exe || (
 )
 
 python -c "import mako" 2>nul || (
-  pip install mako packaging
+  python -m pip install mako packaging
   python -c "import mako" 2>nul || (
     echo ERROR: "mako" module not found for python
     exit /b 1
@@ -45,7 +45,7 @@ python -c "import mako" 2>nul || (
 )
 
 python -c "import yaml" 2>nul || (
-  pip install pyyaml
+  python -m pip install pyyaml
   python -c "import yaml" 2>nul || (
     echo ERROR: "yaml" module not found for python
     exit /b 1
