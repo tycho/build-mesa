@@ -98,7 +98,7 @@ if not exist winflexbison (
   echo Downloading win_flex_bison
   mkdir winflexbison
   pushd winflexbison
-  curl -sfL -o win_flex_bison.zip https://github.com/lexxmark/winflexbison/releases/download/v2.5.25/win_flex_bison-2.5.25.zip || exit /b 1
+  curl -sfL -o win_flex_bison.zip https://github.com/tycho/winflexbison/releases/download/v2.5.26/win_flex_bison-master.zip || exit /b 1
   %SZIP% x -bb0 -y win_flex_bison.zip 1>nul 2>nul || exit /b 1
   del win_flex_bison.zip 1>nul 2>nul
   popd
