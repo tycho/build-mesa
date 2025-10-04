@@ -1,8 +1,8 @@
 diff --git a/src/microsoft/vulkan/dzn_cmd_buffer.c b/src/microsoft/vulkan/dzn_cmd_buffer.c
-index 2a895b73891..262ee44d9d5 100644
+index 2a895b73891..07cc91eac93 100644
 --- a/src/microsoft/vulkan/dzn_cmd_buffer.c
 +++ b/src/microsoft/vulkan/dzn_cmd_buffer.c
-@@ -30,6 +30,73 @@
+@@ -30,6 +30,69 @@
  
  #include "dxil_spirv_nir.h"
  
@@ -13,8 +13,6 @@ index 2a895b73891..262ee44d9d5 100644
 +                                    uint32_t cbv_count,
 +                                    uint32_t srv_count)
 +{
-+    assert(heap->desc_sz == device->device_heaps[D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV].desc_sz);
-+
 +    // Create dummy CBVs
 +    for (uint32_t i = 0; i < cbv_count; i++) {
 +        D3D12_CPU_DESCRIPTOR_HANDLE handle =
@@ -51,8 +49,6 @@ index 2a895b73891..262ee44d9d5 100644
 +                                    uint32_t dst_offset,
 +                                    uint32_t sampler_count)
 +{
-+    assert(heap->desc_sz == device->device_heaps[D3D12_DESCRIPTOR_HEAP_TYPE_SAMPLER].desc_sz);
-+
 +    for (uint32_t i = 0; i < sampler_count; i++) {
 +        D3D12_CPU_DESCRIPTOR_HANDLE handle =
 +            dzn_descriptor_heap_get_cpu_handle(heap, dst_offset + i);
@@ -76,7 +72,7 @@ index 2a895b73891..262ee44d9d5 100644
  static void
  dzn_cmd_buffer_exec_transition_barriers(struct dzn_cmd_buffer *cmdbuf,
                                          D3D12_RESOURCE_BARRIER *barriers,
-@@ -3291,7 +3358,26 @@ dzn_cmd_buffer_update_heaps(struct dzn_cmd_buffer *cmdbuf, uint32_t bindpoint)
+@@ -3291,7 +3354,26 @@ dzn_cmd_buffer_update_heaps(struct dzn_cmd_buffer *cmdbuf, uint32_t bindpoint)
  
           for (uint32_t s = 0; s < MAX_SETS; s++) {
              const struct dzn_descriptor_set *set = desc_state->sets[s].set;
