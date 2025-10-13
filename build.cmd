@@ -233,7 +233,6 @@ if "x%ENABLE_CLEAN%%MUST_CLEAN%" NEQ "x00" (
     -Dllvm=disabled ^
     -Dplatforms=windows ^
     -Dspirv-to-dxil=true ^
-    -Dshared-glapi=enabled ^
     -Dgallium-drivers="" ^
     -Dvulkan-drivers=microsoft-experimental ^
     -Dvulkan-icd-dir="%CD%\mesa.prefix.vk\x86\bin" ^
@@ -266,7 +265,6 @@ if "x%ENABLE_CLEAN%%MUST_CLEAN%" NEQ "x00" (
     -Dplatforms=windows ^
     -Dgallium-drivers=d3d12,zink ^
     -Dspirv-to-dxil=false ^
-    -Dshared-glapi=enabled ^
     -Dopengl=true ^
     -Dgles1=enabled ^
     -Dgles2=enabled ^
@@ -319,7 +317,6 @@ if "x%ENABLE_CLEAN%%MUST_CLEAN%" NEQ "x00" (
     -Dllvm=disabled ^
     -Dplatforms=windows ^
     -Dspirv-to-dxil=true ^
-    -Dshared-glapi=enabled ^
     -Dgallium-drivers="" ^
     -Dvulkan-drivers=microsoft-experimental ^
     -Dvulkan-icd-dir="%CD%\mesa.prefix.vk\arm64\bin" ^
@@ -352,7 +349,6 @@ if "x%ENABLE_CLEAN%%MUST_CLEAN%" NEQ "x00" (
     -Dplatforms=windows ^
     -Dgallium-drivers=d3d12,zink ^
     -Dspirv-to-dxil=false ^
-    -Dshared-glapi=enabled ^
     -Dopengl=true ^
     -Dgles1=enabled ^
     -Dgles2=enabled ^
@@ -405,7 +401,6 @@ if "x%ENABLE_CLEAN%%MUST_CLEAN%" NEQ "x00" (
     -Dllvm=disabled ^
     -Dplatforms=windows ^
     -Dspirv-to-dxil=true ^
-    -Dshared-glapi=enabled ^
     -Dgallium-drivers="" ^
     -Dvulkan-drivers=microsoft-experimental ^
     -Dvulkan-icd-dir="%CD%\mesa.prefix.vk\x64\bin" ^
@@ -438,7 +433,6 @@ if "x%ENABLE_CLEAN%%MUST_CLEAN%" NEQ "x00" (
     -Dplatforms=windows ^
     -Dgallium-drivers=d3d12,zink ^
     -Dspirv-to-dxil=false ^
-    -Dshared-glapi=enabled ^
     -Dopengl=true ^
     -Dgles1=enabled ^
     -Dgles2=enabled ^
