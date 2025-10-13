@@ -232,7 +232,7 @@ if "x%ENABLE_CLEAN%%MUST_CLEAN%" NEQ "x00" (
     -Db_vscrt=%MESON_VSRUNTIME% ^
     -Dllvm=disabled ^
     -Dplatforms=windows ^
-    -Dspirv-to-dxil=false ^
+    -Dspirv-to-dxil=true ^
     -Dshared-glapi=enabled ^
     -Dgallium-drivers="" ^
     -Dvulkan-drivers=microsoft-experimental ^
@@ -318,7 +318,7 @@ if "x%ENABLE_CLEAN%%MUST_CLEAN%" NEQ "x00" (
     -Db_vscrt=%MESON_VSRUNTIME% ^
     -Dllvm=disabled ^
     -Dplatforms=windows ^
-    -Dspirv-to-dxil=false ^
+    -Dspirv-to-dxil=true ^
     -Dshared-glapi=enabled ^
     -Dgallium-drivers="" ^
     -Dvulkan-drivers=microsoft-experimental ^
@@ -404,7 +404,7 @@ if "x%ENABLE_CLEAN%%MUST_CLEAN%" NEQ "x00" (
     -Db_vscrt=%MESON_VSRUNTIME% ^
     -Dllvm=disabled ^
     -Dplatforms=windows ^
-    -Dspirv-to-dxil=false ^
+    -Dspirv-to-dxil=true ^
     -Dshared-glapi=enabled ^
     -Dgallium-drivers="" ^
     -Dvulkan-drivers=microsoft-experimental ^
