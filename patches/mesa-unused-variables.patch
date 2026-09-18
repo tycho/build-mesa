@@ -1,8 +1,21 @@
+diff --git a/src/compiler/spirv/vtn_cmat.c b/src/compiler/spirv/vtn_cmat.c
+index 8e4a5c3d7cb..fcdf82d449d 100644
+--- a/src/compiler/spirv/vtn_cmat.c
++++ b/src/compiler/spirv/vtn_cmat.c
+@@ -711,7 +711,7 @@ init_clip_scalars(struct vtn_builder *b,
+       uint32_t this_index = index_base + f;
+       struct vtn_ssa_value *field = vtn_composite_extract(b, src, &this_index, 1);
+       struct vtn_ssa_value *new_field = vtn_create_ssa_value(b, field->type);
+-      int nc = glsl_get_vector_elements(field->type);
++      UNUSED int nc = glsl_get_vector_elements(field->type);
+       assert(nc <= 1);
+       new_field->def = vtn_get_nir_ssa(b, w[4 + f]);
+ 
 diff --git a/src/gallium/drivers/d3d12/d3d12_resource.cpp b/src/gallium/drivers/d3d12/d3d12_resource.cpp
-index eda22c25346..28bcf481139 100644
+index 5a96e4460f0..c486ae42e45 100644
 --- a/src/gallium/drivers/d3d12/d3d12_resource.cpp
 +++ b/src/gallium/drivers/d3d12/d3d12_resource.cpp
-@@ -456,7 +456,7 @@ convert_planar_resource(struct d3d12_resource *res)
+@@ -476,7 +476,7 @@ convert_planar_resource(struct d3d12_resource *res)
        D3D12_RESOURCE_DESC desc = GetDesc(res->bo->res);
        desc.Flags &= ~D3D12_RESOURCE_FLAG_ALLOW_UNORDERED_ACCESS;
        D3D12_PLACED_SUBRESOURCE_FOOTPRINT placed_footprint = {};
@@ -12,10 +25,10 @@ index eda22c25346..28bcf481139 100644
        screen->dev->GetCopyableFootprints(&desc, subresource, 1, 0, &placed_footprint, nullptr, nullptr, nullptr);
        assert(plane_res->base.b.width0 == footprint->Width);
 diff --git a/src/gallium/drivers/zink/zink_context.c b/src/gallium/drivers/zink/zink_context.c
-index 1720a0739df..42bbf8f61f1 100644
+index e17815079ec..3d5df82f543 100644
 --- a/src/gallium/drivers/zink/zink_context.c
 +++ b/src/gallium/drivers/zink/zink_context.c
-@@ -688,7 +688,7 @@ get_bufferview_for_binding(struct zink_context *ctx, mesa_shader_stage stage, en
+@@ -679,7 +679,7 @@ get_bufferview_for_binding(struct zink_context *ctx, mesa_shader_stage stage, en
  ALWAYS_INLINE static struct zink_resource *
  update_descriptor_state_ubo_db(struct zink_context *ctx, mesa_shader_stage shader, unsigned slot, struct zink_resource *res)
  {

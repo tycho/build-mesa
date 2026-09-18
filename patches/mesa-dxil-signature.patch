@@ -1,5 +1,5 @@
 diff --git a/src/microsoft/compiler/dxil_container.c b/src/microsoft/compiler/dxil_container.c
-index 936bf9a792f..3830a708533 100644
+index 77a14cd5074..5c41abc774f 100644
 --- a/src/microsoft/compiler/dxil_container.c
 +++ b/src/microsoft/compiler/dxil_container.c
 @@ -22,6 +22,7 @@
@@ -10,7 +10,7 @@ index 936bf9a792f..3830a708533 100644
  #include "dxil_module.h"
  
  #include "util/u_debug.h"
-@@ -387,5 +388,7 @@ dxil_container_write(struct dxil_container *c, struct blob *blob)
+@@ -391,5 +392,7 @@ dxil_container_write(struct dxil_container *c, struct blob *blob)
         !blob_write_bytes(blob, c->parts.data, c->parts.size))
        return false;
  
