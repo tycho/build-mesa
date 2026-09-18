@@ -1,8 +1,8 @@
 diff --git a/src/gallium/drivers/d3d12/d3d12_context.h b/src/gallium/drivers/d3d12/d3d12_context.h
-index 2fa25fb8b2f..07bc024364d 100644
+index 3d4df5f9f6f..b407651e76c 100644
 --- a/src/gallium/drivers/d3d12/d3d12_context.h
 +++ b/src/gallium/drivers/d3d12/d3d12_context.h
-@@ -187,6 +187,7 @@ struct d3d12_context {
+@@ -189,6 +189,7 @@ struct d3d12_context {
     uint flags;
     bool queries_disabled;
     bool has_commands;
@@ -11,10 +11,10 @@ index 2fa25fb8b2f..07bc024364d 100644
  #ifdef __cplusplus
     ResourceStateManager *resource_state_manager;
 diff --git a/src/gallium/drivers/d3d12/d3d12_query.cpp b/src/gallium/drivers/d3d12/d3d12_query.cpp
-index 809258d4ebd..9ced2d5aee7 100644
+index d821fe819f9..dff165cd049 100644
 --- a/src/gallium/drivers/d3d12/d3d12_query.cpp
 +++ b/src/gallium/drivers/d3d12/d3d12_query.cpp
-@@ -451,7 +451,11 @@ begin_subquery(struct d3d12_context *ctx, struct d3d12_query *q_parent, unsigned
+@@ -455,7 +455,11 @@ begin_subquery(struct d3d12_context *ctx, struct d3d12_query *q_parent, unsigned
     struct d3d12_query_impl *q = &q_parent->subqueries[sub_query];
     if (q->curr_query == q->num_queries) {
        /* Accumulate current results and store in first slot */
@@ -26,7 +26,7 @@ index 809258d4ebd..9ced2d5aee7 100644
        q->curr_query = 1;
     }
  
-@@ -738,4 +742,5 @@ d3d12_context_query_init(struct pipe_context *pctx)
+@@ -742,4 +746,5 @@ d3d12_context_query_init(struct pipe_context *pctx)
     pctx->get_query_result_resource = d3d12_get_query_result_resource;
     pctx->set_active_query_state = d3d12_set_active_query_state;
     pctx->render_condition = d3d12_render_condition;

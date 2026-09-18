@@ -11,10 +11,10 @@ Dozen had this wrong, and had an image transfer granularity that made no sense
 for graphics or compute.
 
 diff --git a/src/microsoft/vulkan/dzn_device.c b/src/microsoft/vulkan/dzn_device.c
-index 97fd13bed10..f76c5ff8b5e 100644
+index 9b19f4657ed..8d368b340f5 100644
 --- a/src/microsoft/vulkan/dzn_device.c
 +++ b/src/microsoft/vulkan/dzn_device.c
-@@ -459,7 +459,7 @@ dzn_physical_device_cache_caps(struct dzn_physical_device *pdev)
+@@ -471,7 +471,7 @@ dzn_physical_device_cache_caps(struct dzn_physical_device *pdev)
                         VK_QUEUE_TRANSFER_BIT,
           .queueCount = 4,
           .timestampValidBits = 64,
@@ -23,7 +23,7 @@ index 97fd13bed10..f76c5ff8b5e 100644
        },
        .desc = {
           .Type = D3D12_COMMAND_LIST_TYPE_DIRECT,
-@@ -472,7 +472,7 @@ dzn_physical_device_cache_caps(struct dzn_physical_device *pdev)
+@@ -484,7 +484,7 @@ dzn_physical_device_cache_caps(struct dzn_physical_device *pdev)
                         VK_QUEUE_TRANSFER_BIT,
           .queueCount = 8,
           .timestampValidBits = 64,

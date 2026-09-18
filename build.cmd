@@ -4,11 +4,11 @@ setlocal enabledelayedexpansion
 set MESA_BRANCH=main
 set VKLOADER_BRANCH=v1.4.327
 set WINSDK_VER=10.0.26100.0
-set ENABLE_DBGSYM=0
+set ENABLE_DBGSYM=1
 set ENABLE_INSTALLER=1
 set ENABLE_CLEAN=1
 
-set PATH=%CD%\winflexbison;C:\Program Files\Python313;C:\Program Files\Python313\Scripts;%PATH%
+set PATH=%CD%\winflexbison;%AppData%\Python\Python314\Scripts;C:\Program Files\Python314;C:\Program Files\Python314\Scripts;C:\Python314;C:\Python314\Scripts;%PATH%
 set VSCMD_SKIP_SENDTELEMETRY=1
 
 rem *** check dependencies ***
@@ -48,6 +48,22 @@ python -c "import yaml" 2>nul || (
   python -m pip install pyyaml
   python -c "import yaml" 2>nul || (
     echo ERROR: "yaml" module not found for python
+    exit /b 1
+  )
+)
+
+python -c "import lxml" 2>nul || (
+  python -m pip install lxml
+  python -c "import lxml" 2>nul || (
+    echo ERROR: "lxml" module not found for python
+    exit /b 1
+  )
+)
+
+python -c "import rnc2rng" 2>nul || (
+  python -m pip install rnc2rng
+  python -c "import rnc2rng" 2>nul || (
+    echo ERROR: "rnc2rng" module not found for python
     exit /b 1
   )
 )
@@ -136,7 +152,7 @@ cd ..
 
 if not exist vkloader.src (
   echo Cloning Vulkan loader from git
-  git clone https://github.com/KhronosGroup/Vulkan-Loader.git vkloader.src
+  git clone https://github.com/tycho/Vulkan-Loader.git vkloader.src
 )
 
 echo Updating Vulkan loader source tree
@@ -151,13 +167,7 @@ if "x%ENABLE_CLEAN%" NEQ "x0" (
   git checkout .
   git checkout -t origin/%VKLOADER_BRANCH% || git checkout %VKLOADER_BRANCH%
   git pull
-  del /q loader\generated\vk_command_name_hashes.h
-  del /q loader\xxhash.h
-  del /q scripts\generators\command_name_hash_generator.py
-  git apply --verbose ..\patches\vkloader-install-pdb.patch || exit /b 1
   git apply --verbose ..\patches\vkloader-no-d3dmappinglayers.patch || exit /b 1
-  git apply --verbose ..\patches\vkloader-xxhash-fn-lookup.patch || exit /b 1
-  git apply --verbose ..\patches\vkloader-icd-cache.patch || exit /b 1
 )
 cd ..
 

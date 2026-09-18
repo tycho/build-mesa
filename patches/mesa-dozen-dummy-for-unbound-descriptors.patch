@@ -1,5 +1,5 @@
 diff --git a/src/microsoft/vulkan/dzn_cmd_buffer.c b/src/microsoft/vulkan/dzn_cmd_buffer.c
-index 2a895b73891..07cc91eac93 100644
+index fd85f8812ad..67cf8d64678 100644
 --- a/src/microsoft/vulkan/dzn_cmd_buffer.c
 +++ b/src/microsoft/vulkan/dzn_cmd_buffer.c
 @@ -30,6 +30,69 @@
@@ -72,7 +72,7 @@ index 2a895b73891..07cc91eac93 100644
  static void
  dzn_cmd_buffer_exec_transition_barriers(struct dzn_cmd_buffer *cmdbuf,
                                          D3D12_RESOURCE_BARRIER *barriers,
-@@ -3291,7 +3354,26 @@ dzn_cmd_buffer_update_heaps(struct dzn_cmd_buffer *cmdbuf, uint32_t bindpoint)
+@@ -3298,7 +3361,26 @@ dzn_cmd_buffer_update_heaps(struct dzn_cmd_buffer *cmdbuf, uint32_t bindpoint)
  
           for (uint32_t s = 0; s < MAX_SETS; s++) {
              const struct dzn_descriptor_set *set = desc_state->sets[s].set;
@@ -101,10 +101,10 @@ index 2a895b73891..07cc91eac93 100644
              uint32_t set_heap_offset = pipeline->sets[s].heap_offsets[type];
              uint32_t set_desc_count = MIN2(pipeline->sets[s].range_desc_count[type], set->heap_sizes[type]);
 diff --git a/src/microsoft/vulkan/dzn_device.c b/src/microsoft/vulkan/dzn_device.c
-index 51643bf19eb..f55758788d6 100644
+index 9b19f4657ed..37175b808fe 100644
 --- a/src/microsoft/vulkan/dzn_device.c
 +++ b/src/microsoft/vulkan/dzn_device.c
-@@ -2184,6 +2184,12 @@ dzn_device_destroy(struct dzn_device *device, const VkAllocationCallbacks *pAllo
+@@ -2224,6 +2224,12 @@ dzn_device_destroy(struct dzn_device *device, const VkAllocationCallbacks *pAllo
        mtx_destroy(&device->device_heaps[type].lock);
     }
  
@@ -117,7 +117,7 @@ index 51643bf19eb..f55758788d6 100644
     if (device->dev_config)
        ID3D12DeviceConfiguration_Release(device->dev_config);
  
-@@ -2409,6 +2415,57 @@ dzn_device_create(struct dzn_physical_device *pdev,
+@@ -2449,6 +2455,57 @@ dzn_device_create(struct dzn_physical_device *pdev,
        }
     }
  
@@ -176,7 +176,7 @@ index 51643bf19eb..f55758788d6 100644
     *out = dzn_device_to_handle(device);
     return VK_SUCCESS;
 diff --git a/src/microsoft/vulkan/dzn_private.h b/src/microsoft/vulkan/dzn_private.h
-index 27d7a3ab9f8..810ea638e09 100644
+index 6b6b8015d12..4b4ebbaa2bd 100644
 --- a/src/microsoft/vulkan/dzn_private.h
 +++ b/src/microsoft/vulkan/dzn_private.h
 @@ -302,6 +302,11 @@ struct dzn_device {
