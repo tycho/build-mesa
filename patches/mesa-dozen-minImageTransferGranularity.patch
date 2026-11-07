@@ -1,20 +1,20 @@
 https://registry.khronos.org/vulkan/specs/latest/man/html/VkQueueFamilyProperties.html
 
-	Queues supporting graphics and/or compute operations MUST report (1,1,1) in
-	minImageTransferGranularity, meaning that there are no additional restrictions
-	on the granularity of image transfer operations for these queues. Other queues
-	supporting image transfer operations are only REQUIRED to support whole mip
-	level transfers, thus minImageTransferGranularity for queues belonging to such
-	queue families MAY be (0,0,0).
+       Queues supporting graphics and/or compute operations MUST report (1,1,1) in
+       minImageTransferGranularity, meaning that there are no additional restrictions
+       on the granularity of image transfer operations for these queues. Other queues
+       supporting image transfer operations are only REQUIRED to support whole mip
+       level transfers, thus minImageTransferGranularity for queues belonging to such
+       queue families MAY be (0,0,0).
 
 Dozen had this wrong, and had an image transfer granularity that made no sense
 for graphics or compute.
 
 diff --git a/src/microsoft/vulkan/dzn_device.c b/src/microsoft/vulkan/dzn_device.c
-index 9b19f4657ed..8d368b340f5 100644
+index ac1ca26b6d3..79099e04be5 100644
 --- a/src/microsoft/vulkan/dzn_device.c
 +++ b/src/microsoft/vulkan/dzn_device.c
-@@ -471,7 +471,7 @@ dzn_physical_device_cache_caps(struct dzn_physical_device *pdev)
+@@ -469,7 +469,7 @@ dzn_physical_device_cache_caps(struct dzn_physical_device *pdev)
                         VK_QUEUE_TRANSFER_BIT,
           .queueCount = 4,
           .timestampValidBits = 64,
@@ -23,7 +23,7 @@ index 9b19f4657ed..8d368b340f5 100644
        },
        .desc = {
           .Type = D3D12_COMMAND_LIST_TYPE_DIRECT,
-@@ -484,7 +484,7 @@ dzn_physical_device_cache_caps(struct dzn_physical_device *pdev)
+@@ -482,7 +482,7 @@ dzn_physical_device_cache_caps(struct dzn_physical_device *pdev)
                         VK_QUEUE_TRANSFER_BIT,
           .queueCount = 8,
           .timestampValidBits = 64,

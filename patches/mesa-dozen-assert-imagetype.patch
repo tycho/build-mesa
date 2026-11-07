@@ -1,8 +1,8 @@
 diff --git a/src/vulkan/wsi/wsi_common.c b/src/vulkan/wsi/wsi_common.c
-index cd1eeeee5bd..af74cffb0e4 100644
+index e7e077fa242..12b5c97175a 100644
 --- a/src/vulkan/wsi/wsi_common.c
 +++ b/src/vulkan/wsi/wsi_common.c
-@@ -706,7 +706,10 @@ wsi_configure_image(const struct wsi_swapchain *chain,
+@@ -713,7 +713,10 @@ wsi_configure_image(const struct wsi_swapchain *chain,
                      VkExternalMemoryHandleTypeFlags handle_types,
                      struct wsi_image_info *info)
  {

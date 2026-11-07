@@ -101,10 +101,10 @@ index fd85f8812ad..67cf8d64678 100644
              uint32_t set_heap_offset = pipeline->sets[s].heap_offsets[type];
              uint32_t set_desc_count = MIN2(pipeline->sets[s].range_desc_count[type], set->heap_sizes[type]);
 diff --git a/src/microsoft/vulkan/dzn_device.c b/src/microsoft/vulkan/dzn_device.c
-index 9b19f4657ed..37175b808fe 100644
+index ac1ca26b6d3..4af153ced0f 100644
 --- a/src/microsoft/vulkan/dzn_device.c
 +++ b/src/microsoft/vulkan/dzn_device.c
-@@ -2224,6 +2224,12 @@ dzn_device_destroy(struct dzn_device *device, const VkAllocationCallbacks *pAllo
+@@ -2222,6 +2222,12 @@ dzn_device_destroy(struct dzn_device *device, const VkAllocationCallbacks *pAllo
        mtx_destroy(&device->device_heaps[type].lock);
     }
  
@@ -117,7 +117,7 @@ index 9b19f4657ed..37175b808fe 100644
     if (device->dev_config)
        ID3D12DeviceConfiguration_Release(device->dev_config);
  
-@@ -2449,6 +2455,57 @@ dzn_device_create(struct dzn_physical_device *pdev,
+@@ -2447,6 +2453,57 @@ dzn_device_create(struct dzn_physical_device *pdev,
        }
     }
  
@@ -176,10 +176,10 @@ index 9b19f4657ed..37175b808fe 100644
     *out = dzn_device_to_handle(device);
     return VK_SUCCESS;
 diff --git a/src/microsoft/vulkan/dzn_private.h b/src/microsoft/vulkan/dzn_private.h
-index 6b6b8015d12..4b4ebbaa2bd 100644
+index 9b1f5abe2e6..e9259150af5 100644
 --- a/src/microsoft/vulkan/dzn_private.h
 +++ b/src/microsoft/vulkan/dzn_private.h
-@@ -302,6 +302,11 @@ struct dzn_device {
+@@ -301,6 +301,11 @@ struct dzn_device {
        ID3D12Resource *refs;
     } queries;
  
